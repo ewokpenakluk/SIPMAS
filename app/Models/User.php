@@ -15,6 +15,9 @@ class User extends Authenticatable
     protected $fillable = [
         'nama',
         'email',
+        'nik',
+        'no_hp',
+        'alamat',
         'password',
         'peran',
     ];
@@ -32,16 +35,21 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi: Admin menangani banyak pengaduan
+    // Relasi: User/Admin menangani banyak pengaduan
     public function pengaduan()
     {
         return $this->hasMany(Pengaduan::class, 'pengguna_id');
     }
 
-    // Relasi: Admin memiliki banyak tanggapan
+    // Relasi: User/Admin memiliki banyak tanggapan
     public function tanggapan()
     {
         return $this->hasMany(Tanggapan::class, 'pengguna_id');
+    }
+
+    public function isWarga(): bool
+    {
+        return $this->peran === 'warga';
     }
 
     public function isAdmin(): bool

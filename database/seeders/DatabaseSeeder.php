@@ -16,9 +16,12 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Seed User Admin
         $admin = User::firstOrCreate(
-            ['email' => 'admin@sagalaherang.desa.id'],
+            ['nik' => '3213010101900001'],
             [
                 'nama' => 'Admin Desa Sagalaherang',
+                'email' => 'admin@sagalaherang.desa.id',
+                'no_hp' => '081234567890',
+                'alamat' => 'Kantor Desa Sagalaherang',
                 'password' => bcrypt('admin123'),
                 'peran' => 'superadmin',
             ]
@@ -42,11 +45,9 @@ class DatabaseSeeder extends Seeder
         $pelayananCategory = Kategori::where('slug', 'pelayanan-publik')->first();
         $lingkunganCategory = Kategori::where('slug', 'kebersihan-lingkungan')->first();
 
-        // 3. Seed Sample Pengaduan (1,245 total to match mockup counts: 1245 total, 980 selesai, 124 dalam proses)
+        // 3. Seed Sample Pengaduan
         if (Pengaduan::count() === 0) {
-            // Selesai (980) + (141) = 1,121
-            // Let's create exact count matching mockup: Total 1,245 | Selesai 980 | Dalam Proses 124 | Ditolak 141
-            // Selesai: 980
+            // Selesai (980)
             for ($i = 1; $i <= 980; $i++) {
                 Pengaduan::create([
                     'kategori_id' => $infraCategory->id ?? 1,
