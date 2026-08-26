@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PortalController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,13 +13,21 @@ Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
 
-// Auth Routes (Registrasi & Login Warga)
+// Auth Routes (Portal Login & Daftar Toggle)
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/portal', [PortalController::class, 'index'])->name('portal');
     
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    // Rute Login & Register mengarahkan ke portal dengan tab terintegrasi
+    Route::get('/login', function () {
+        return redirect()->route('portal', ['tab' => 'masuk']);
+    })->name('login');
+    
+    Route::get('/register', function () {
+        return redirect()->route('portal', ['tab' => 'daftar']);
+    })->name('register');
+
     Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/register', [RegisterController::class, 'register']);
 });
 
 // Logout
