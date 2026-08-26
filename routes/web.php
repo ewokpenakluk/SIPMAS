@@ -3,9 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+
+// Dashboard Warga (User Terautentikasi / Sample Tampilan)
+Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
 
 // Auth Routes (Registrasi Warga)
 Route::middleware('guest')->group(function () {
@@ -14,7 +18,7 @@ Route::middleware('guest')->group(function () {
     
     // Login Placeholder
     Route::get('/login', function () {
-        return view('auth.register'); // Sementara redirect ke register jika belum ada login page
+        return view('auth.register');
     })->name('login');
 });
 
@@ -28,19 +32,19 @@ Route::post('/logout', function () {
 
 // Placeholder routes untuk navigasi & fitur warga
 Route::get('/profil', function () {
-    return view('beranda');
+    return view('warga.dashboard');
 })->name('profil');
 
 Route::get('/riwayat', function () {
-    return view('beranda');
+    return view('warga.dashboard');
 })->name('riwayat');
 
 Route::get('/pengaduan/buat', function () {
-    return view('beranda');
+    return view('warga.dashboard');
 })->name('pengaduan.buat');
 
 Route::get('/pengaduan/lacak', function () {
-    return view('beranda');
+    return view('warga.dashboard');
 })->name('pengaduan.lacak');
 
 Route::get('/kontak', function () {
