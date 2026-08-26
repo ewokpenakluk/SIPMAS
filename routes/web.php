@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,15 +12,13 @@ Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
 
-// Auth Routes (Registrasi Warga)
+// Auth Routes (Registrasi & Login Warga)
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
     
-    // Login Placeholder
-    Route::get('/login', function () {
-        return view('auth.register');
-    })->name('login');
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
 });
 
 // Logout
