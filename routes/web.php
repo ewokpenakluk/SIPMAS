@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\LacakStatusController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PortalController;
@@ -12,6 +13,10 @@ Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
+
+// Lacak Status Pengaduan
+Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
+Route::get('/lacak', [LacakStatusController::class, 'index']);
 
 // Auth Routes (Portal Login & Daftar Toggle)
 Route::middleware('guest')->group(function () {
@@ -50,10 +55,6 @@ Route::get('/riwayat', function () {
 Route::get('/pengaduan/buat', function () {
     return view('warga.dashboard');
 })->name('pengaduan.buat');
-
-Route::get('/pengaduan/lacak', function () {
-    return view('warga.dashboard');
-})->name('pengaduan.lacak');
 
 Route::get('/kontak', function () {
     return view('beranda');
