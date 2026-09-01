@@ -64,17 +64,23 @@
 
             <!-- Navigation Links -->
             <nav class="hidden md:flex items-center space-x-8">
-                <a href="{{ route('beranda') }}" class="relative font-semibold text-sm transition-colors py-2 {{ request()->routeIs('beranda') ? 'text-brand-dark' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('beranda') }}" class="relative font-medium text-sm transition-colors py-2 {{ request()->routeIs('beranda') ? 'text-brand-dark font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
                     Home
                     @if(request()->routeIs('beranda'))
                         <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-dark rounded-full"></span>
                     @endif
                 </a>
-                <a href="{{ route('profil') }}" class="relative font-medium text-sm text-slate-500 hover:text-brand-dark transition-colors py-2">
-                    Profile
+                <a href="{{ route('pengaduan.lacak') }}" class="relative font-medium text-sm transition-colors py-2 {{ request()->routeIs('pengaduan.lacak') ? 'text-brand-dark font-semibold' : 'text-slate-500 hover:text-brand-dark' }}">
+                    Riwayat Pengaduan
+                    @if(request()->routeIs('pengaduan.lacak'))
+                        <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-dark rounded-full"></span>
+                    @endif
                 </a>
-                <a href="{{ route('riwayat') }}" class="relative font-medium text-sm text-slate-500 hover:text-brand-dark transition-colors py-2">
-                    History
+                <a href="{{ route('riwayat') }}" class="relative font-medium text-sm transition-colors py-2 {{ request()->routeIs('riwayat') || request()->routeIs('dashboard') ? 'text-brand-dark font-semibold' : 'text-slate-500 hover:text-brand-dark' }}">
+                    Riwayat
+                    @if(request()->routeIs('riwayat') || request()->routeIs('dashboard'))
+                        <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-dark rounded-full"></span>
+                    @endif
                 </a>
             </nav>
 
