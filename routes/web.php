@@ -7,12 +7,16 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PortalController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
+use App\Http\Controllers\Warga\RiwayatController as WargaRiwayatController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
+
+// Riwayat Pengaduan Warga
+Route::get('/riwayat', [WargaRiwayatController::class, 'index'])->name('riwayat');
 
 // Lacak Status Pengaduan
 Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
@@ -47,10 +51,6 @@ Route::post('/logout', function () {
 Route::get('/profil', function () {
     return view('warga.dashboard');
 })->name('profil');
-
-Route::get('/riwayat', function () {
-    return view('warga.dashboard');
-})->name('riwayat');
 
 Route::get('/pengaduan/buat', function () {
     return view('warga.dashboard');

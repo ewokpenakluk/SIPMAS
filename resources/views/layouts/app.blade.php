@@ -65,7 +65,7 @@
             <!-- Navigation Links -->
             <nav class="hidden md:flex items-center space-x-8">
                 <a href="{{ route('beranda') }}" class="relative font-medium text-sm transition-colors py-2 {{ request()->routeIs('beranda') ? 'text-brand-dark font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
-                    Home
+                    Beranda
                     @if(request()->routeIs('beranda'))
                         <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-dark rounded-full"></span>
                     @endif
