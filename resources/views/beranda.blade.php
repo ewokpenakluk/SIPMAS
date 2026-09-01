@@ -9,7 +9,7 @@
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <!-- Left Text & Buttons -->
         <div class="lg:col-span-6 space-y-6">
-            <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-900 tracking-tight leading-[1.18]">
+            <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-900 tracking-tight leading-snug lg:leading-[1.35]">
                 Layanan Pengaduan<br>Online Desa Sagalaherang
             </h1>
             <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg font-normal">
