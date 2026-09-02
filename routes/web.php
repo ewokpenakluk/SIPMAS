@@ -12,6 +12,7 @@ use App\Http\Controllers\Warga\ProfilController as WargaProfilController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\PengaduanController as AdminPengaduanController;
+use App\Http\Controllers\Admin\StatistikController as AdminStatistikController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
@@ -27,6 +28,9 @@ Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::get('/admin/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.kelola');
 Route::get('/admin/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.show');
 Route::post('/admin/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('admin.pengaduan.update');
+
+// Statistik & Rekapitulasi Data Admin
+Route::get('/admin/statistik', [AdminStatistikController::class, 'index'])->name('admin.statistik');
 
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');

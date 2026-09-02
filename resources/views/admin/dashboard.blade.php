@@ -7,7 +7,6 @@
     
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS CDN -->
@@ -99,12 +98,6 @@
                         <span>Statistik</span>
                     </a>
 
-                    <!-- Pengaturan -->
-                    <a href="#" 
-                       class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
-                        <i class="fa-solid fa-gear text-slate-400 text-sm"></i>
-                        <span>Pengaturan</span>
-                    </a>
                 </nav>
             </div>
 
