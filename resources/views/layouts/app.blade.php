@@ -100,7 +100,7 @@
     </header>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-grow w-full">
+    <main class="grow w-full">
         @yield('content')
     </main>
 
