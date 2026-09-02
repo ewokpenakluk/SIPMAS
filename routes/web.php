@@ -10,13 +10,17 @@ use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Warga\RiwayatController as WargaRiwayatController;
 use App\Http\Controllers\Warga\ProfilController as WargaProfilController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
-// Dashboard Admin Panel
+// Dashboard Admin Panel & Admin Login
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 Route::get('/admin', [AdminDashboardController::class, 'index']);
+
+Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminLoginController::class, 'login']);
 
 // Dashboard Warga (User Terautentikasi / Sample Tampilan)
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
