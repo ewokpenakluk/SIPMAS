@@ -100,12 +100,12 @@
     </header>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-grow">
+    <main class="flex-grow w-full">
         @yield('content')
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 mt-20 py-8">
+    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
             <div>
                 © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
