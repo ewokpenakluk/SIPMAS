@@ -63,7 +63,8 @@
                 </span>
             </a>
 
-            <!-- Navigation Links -->
+            <!-- Navigation Links & Right Actions (Hanya ditampilkan selain di Beranda) -->
+            @unless(request()->routeIs('beranda'))
             <nav class="hidden md:flex items-center space-x-8">
                 <a href="{{ route('beranda') }}" class="relative font-medium text-sm transition-colors py-2 {{ request()->routeIs('beranda') ? 'text-brand-dark font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
                     Beranda
@@ -97,6 +98,7 @@
                     </div>
                 </a>
             </div>
+            @endunless
         </div>
     </header>
     @endunless

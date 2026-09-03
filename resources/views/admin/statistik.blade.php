@@ -135,13 +135,6 @@
                         Kelola, analisis, dan unduh data pengaduan masyarakat.
                     </p>
                 </div>
-
-                <!-- Tombol Cetak Laporan Bulanan (Top Right) -->
-                <button type="button" 
-                        class="bg-[#06612B] hover:bg-[#044920] text-white font-semibold text-xs px-5 py-3 rounded-full shadow-sm transition-all hover:shadow-md active:scale-[0.99] inline-flex items-center gap-2 self-start sm:self-auto">
-                    <i class="fa-solid fa-print text-xs"></i>
-                    <span>Cetak Laporan Bulanan</span>
-                </button>
             </div>
 
             <!-- FILTER BAR CARD -->
