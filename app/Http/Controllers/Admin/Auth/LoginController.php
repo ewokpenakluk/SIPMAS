@@ -29,7 +29,7 @@ class LoginController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        $identifier = $request->login_identifier;
+        $identifier = trim($request->login_identifier);
         $password = $request->password;
 
         // Autentikasi via Email / NIP
@@ -37,15 +37,21 @@ class LoginController extends Controller
             Auth::attempt(['nik' => $identifier, 'password' => $password], $request->boolean('remember'))) {
             
             $user = Auth::user();
-            if ($user && ($user->peran === 'admin' || $user->peran === 'superadmin')) {
+
+            // Proteksi Khusus: Hanya Akun Admin / Superadmin yang diizinkan masuk melalui Admin Login
+            if ($user && $user->isAdmin()) {
                 $request->session()->regenerate();
-                return redirect()->intended(route('admin.dashboard'))->with('success', 'Selamat datang di Admin Panel!');
+                return redirect()->intended(route('admin.dashboard'))
+                    ->with('success', 'Selamat datang kembali di Admin Panel, ' . ($user->nama ?? 'Admin') . '!');
             }
 
-            // Jika role bukan admin/superadmin
+            // Jika akun adalah warga/masyarakat biasa (bukan admin)
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             return back()->withErrors([
-                'login_identifier' => 'Akun Anda tidak memiliki akses ke Admin Panel.',
+                'login_identifier' => 'Akun masyarakat tidak diizinkan masuk ke halaman Admin Panel. Silakan login melalui portal masyarakat.',
             ])->onlyInput('login_identifier');
         }
 

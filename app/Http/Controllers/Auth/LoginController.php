@@ -36,15 +36,21 @@ class LoginController extends Controller
         // 1. Coba login via NIK atau Email
         if (Auth::attempt(['nik' => $identifier, 'password' => $password], $request->boolean('remember')) ||
             Auth::attempt(['email' => $identifier, 'password' => $password], $request->boolean('remember'))) {
-            $request->session()->regenerate();
+            
             $user = Auth::user();
 
-            // Jika akun adalah Admin / Superadmin, lempar ke Admin Dashboard
-            if ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard')
-                    ->with('success', 'Selamat datang di Admin Panel, ' . ($user->nama ?? 'Admin') . '!');
+            // Proteksi Khusus: Halaman login masyarakat TIDAK BISA digunakan oleh akun Admin untuk masuk ke Admin Panel
+            if ($user && $user->isAdmin()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'login_identifier' => 'Akun Admin tidak diizinkan masuk melalui halaman login masyarakat. Silakan gunakan Halaman Login Admin.',
+                ])->onlyInput('login_identifier');
             }
 
+            $request->session()->regenerate();
             return redirect()->route('dashboard')
                 ->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Warga') . '!');
         }
