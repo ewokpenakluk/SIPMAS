@@ -37,7 +37,8 @@ class LoginController extends Controller
         if (Auth::attempt(['nik' => $identifier, 'password' => $password], $request->boolean('remember')) ||
             Auth::attempt(['email' => $identifier, 'password' => $password], $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali!');
+            $user = Auth::user();
+            return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Warga') . '!');
         }
 
         // 2. Cek apakah akun dengan NIK / Email tersebut ADA di database

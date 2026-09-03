@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -42,7 +41,7 @@ class RegisterController extends Controller
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
-        $user = User::create([
+        User::create([
             'nama' => $request->nama,
             'nik' => $request->nik,
             'alamat' => $request->alamat,
@@ -51,8 +50,8 @@ class RegisterController extends Controller
             'peran' => 'warga',
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('beranda')->with('success', 'Akun Anda berhasil terdaftar! Selamat datang di SIPMAS Sagalaherang.');
+        // Setelah registrasi berhasil, lemparkan/arahkan ke halaman login (tab Masuk)
+        return redirect()->route('portal', ['tab' => 'masuk'])
+            ->with('success', 'Registrasi akun berhasil! Silakan masuk dengan NIK dan Kata Sandi yang baru Anda buat.');
     }
 }
