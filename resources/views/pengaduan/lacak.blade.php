@@ -22,7 +22,7 @@
                 Masukkan Nomor Tiket Pengaduan
             </label>
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div class="relative flex-grow">
+                <div class="relative grow">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </div>

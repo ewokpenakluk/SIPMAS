@@ -10,28 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#06612B',
-                            medium: '#0B8A3E',
-                            light: '#80EE82',
-                            lightbg: '#EAFCEB',
-                            graybg: '#F5F7F5'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Vite Compiled Tailwind CSS & JS -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -45,7 +25,7 @@
 </head>
 <body class="min-h-screen bg-[#F8FAF8] text-slate-800 antialiased p-4 sm:p-6">
 
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="max-w-350 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- SIDEBAR KIRI: ADMIN PANEL -->
         <aside class="lg:col-span-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-between min-h-[calc(100vh-48px)]">

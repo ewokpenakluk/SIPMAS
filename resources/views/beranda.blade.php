@@ -28,8 +28,8 @@
             <div class="relative rounded-3xl overflow-hidden shadow-lg border border-slate-100 group">
                 <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200&auto=format&fit=crop" 
                      alt="Pemandangan Desa Sagalaherang Subang" 
-                     class="w-full h-[320px] sm:h-[380px] object-cover group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent"></div>
+                     class="w-full h-80 sm:h-95 object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-linear-to-t from-slate-900/30 via-transparent to-transparent"></div>
                 <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md text-white text-[11px] px-3 py-1.5 rounded-lg font-medium border border-white/20">
                     Desa Sagalaherang, Subang
                 </div>
@@ -51,7 +51,7 @@
                     <i class="fa-solid fa-shapes text-base"></i>
                 </div>
                 <h3 class="font-bold text-slate-900 text-base mb-1.5">Daftar</h3>
-                <p class="text-xs text-slate-500 leading-relaxed max-w-[180px] mx-auto">
+                <p class="text-xs text-slate-500 leading-relaxed max-w-45 mx-auto">
                     Buat akun untuk mulai mengajukan.
                 </p>
             </div>
@@ -62,7 +62,7 @@
                     <i class="fa-solid fa-[#06612B] fa-file-pen text-base"></i>
                 </div>
                 <h3 class="font-bold text-slate-900 text-base mb-1.5">Ajukan</h3>
-                <p class="text-xs text-slate-500 leading-relaxed max-w-[180px] mx-auto">
+                <p class="text-xs text-slate-500 leading-relaxed max-w-45 mx-auto">
                     Tuliskan detail keluhan Anda.
                 </p>
             </div>
@@ -73,7 +73,7 @@
                     <i class="fa-solid fa-shield-check text-base"></i>
                 </div>
                 <h3 class="font-bold text-slate-900 text-base mb-1.5">Verifikasi</h3>
-                <p class="text-xs text-slate-500 leading-relaxed max-w-[180px] mx-auto">
+                <p class="text-xs text-slate-500 leading-relaxed max-w-45 mx-auto">
                     Admin akan memvalidasi laporan.
                 </p>
             </div>
@@ -84,7 +84,7 @@
                     <i class="fa-solid fa-check-double text-base"></i>
                 </div>
                 <h3 class="font-bold text-slate-900 text-base mb-1.5">Selesai</h3>
-                <p class="text-xs text-slate-500 leading-relaxed max-w-[180px] mx-auto">
+                <p class="text-xs text-slate-500 leading-relaxed max-w-45 mx-auto">
                     Masalah ditindaklanjuti.
                 </p>
             </div>
@@ -181,11 +181,11 @@
         </div>
 
         <!-- Right: Peta Lokasi Sagalaherang -->
-        <div class="lg:col-span-6 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200 relative min-h-[300px]">
+        <div class="lg:col-span-6 bg-slate-200 rounded-2xl overflow-hidden shadow-sm border border-slate-200 relative min-h-75">
             <iframe 
                 title="Peta Lokasi Desa Sagalaherang"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.337077421319!2d107.65219967499479!3d-6.728646993267566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e734fdfcb0bf%3A0x401e8f1fc28c680!2sSagalaherang%2C%20Subang%20Regency%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" 
-                class="w-full h-full min-h-[300px] border-0" 
+                class="w-full h-full min-h-75 border-0" 
                 allowfullscreen="" 
                 loading="lazy" 
                 referrerpolicy="no-referrer-when-downgrade">
