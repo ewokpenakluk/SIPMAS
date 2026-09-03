@@ -13,8 +13,7 @@ class LacakStatusController extends Controller
     public function index(Request $request)
     {
         if (!\Illuminate\Support\Facades\Auth::check()) {
-            return redirect()->route('portal', ['tab' => 'daftar'])
-                ->with('info', 'Silakan mendaftar (registrasi) akun terlebih dahulu untuk melacak status pengaduan masyarakat.');
+            return redirect()->route('portal', ['tab' => 'daftar']);
         }
 
         $nomorTiket = $request->query('tiket');

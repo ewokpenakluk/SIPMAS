@@ -30,19 +30,19 @@
                 </p>
             </div>
 
-            <!-- REGISTRASI BUBBLE ALERT -->
-            @if (session('info'))
+            <!-- REGISTRASI BUBBLE ALERT (Hanya tampil saat masyarakat mencoba login tetapi akun belum ada) -->
+            @if (session('unregistered_account_bubble'))
                 <div class="mb-6 p-4 rounded-2xl bg-[#EAFCEB] border-2 border-[#80EE82] text-slate-800 text-xs shadow-sm flex items-start gap-3.5 relative overflow-hidden transition-all">
                     <div class="w-9 h-9 rounded-xl bg-[#06612B] text-[#80EE82] flex items-center justify-center shrink-0 shadow-sm mt-0.5">
                         <i class="fa-solid fa-user-plus text-sm"></i>
                     </div>
                     <div class="space-y-0.5">
                         <h4 class="font-extrabold text-[#06612B] text-xs uppercase tracking-wider flex items-center gap-1.5">
-                            <span>Registrasi Akun Terlebih Dahulu</span>
+                            <span>Akun Belum Terdaftar</span>
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
                         </h4>
                         <p class="text-slate-700 text-xs leading-relaxed font-medium">
-                            {{ session('info') }}
+                            {{ session('unregistered_account_bubble') }}
                         </p>
                     </div>
                 </div>

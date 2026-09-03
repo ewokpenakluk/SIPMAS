@@ -48,7 +48,7 @@ class LoginController extends Controller
         // 3. Jika akun BELUM ADA (Masyarakat belum memiliki akun)
         if (!$userExists) {
             return redirect()->route('portal', ['tab' => 'daftar'])
-                ->with('info', "Akun ('$identifier') belum terdaftar. Silakan registrasi terlebih dahulu untuk membuat akun baru.")
+                ->with('unregistered_account_bubble', "Akun dengan NIK/Email '$identifier' belum terdaftar di sistem. Silakan registrasi terlebih dahulu untuk membuat akun baru.")
                 ->withInput();
         }
 
