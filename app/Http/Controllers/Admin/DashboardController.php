@@ -45,8 +45,10 @@ class DashboardController extends Controller
             [
                 'id' => 1,
                 'nomor_tiket' => 'LAP-2024-089',
+                'tiket' => 'LAP-2024-089',
                 'tanggal' => '24 Okt 2024',
                 'nama_pelapor' => 'Budi Santoso',
+                'nama_warga' => 'Budi Santoso',
                 'kategori' => 'Infrastruktur & Jalan',
                 'judul' => 'Jalan Berlubang di Dekat Perempatan Pasar',
                 'status' => 'MENUNGGU',
@@ -54,8 +56,10 @@ class DashboardController extends Controller
             [
                 'id' => 2,
                 'nomor_tiket' => 'LAP-2024-088',
+                'tiket' => 'LAP-2024-088',
                 'tanggal' => '23 Okt 2024',
                 'nama_pelapor' => 'Siti Aminah',
+                'nama_warga' => 'Siti Aminah',
                 'kategori' => 'Layanan Publik',
                 'judul' => 'Permohonan Perbaikan Penerangan Jalan RT 03',
                 'status' => 'MENUNGGU',
@@ -63,8 +67,10 @@ class DashboardController extends Controller
             [
                 'id' => 3,
                 'nomor_tiket' => 'LAP-2024-087',
+                'tiket' => 'LAP-2024-087',
                 'tanggal' => '22 Okt 2024',
                 'nama_pelapor' => 'Agus Supriyadi',
+                'nama_warga' => 'Agus Supriyadi',
                 'kategori' => 'Kebersihan & Lingkungan',
                 'judul' => 'Saluran Drainase Tersumbat Sampah',
                 'status' => 'MENUNGGU',
