@@ -73,6 +73,10 @@ Route::post('/logout', function () {
 
 // Placeholder routes untuk navigasi & fitur warga
 Route::get('/pengaduan/buat', function () {
+    if (!Auth::check()) {
+        return redirect()->route('portal', ['tab' => 'daftar'])
+            ->with('info', 'Silakan mendaftar (registrasi) akun terlebih dahulu untuk mengajukan pengaduan masyarakat.');
+    }
     return view('warga.dashboard');
 })->name('pengaduan.buat');
 

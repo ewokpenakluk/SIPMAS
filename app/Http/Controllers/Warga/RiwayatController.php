@@ -14,6 +14,11 @@ class RiwayatController extends Controller
      */
     public function index(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('portal', ['tab' => 'daftar'])
+                ->with('info', 'Silakan mendaftar (registrasi) akun terlebih dahulu untuk melihat riwayat pengaduan.');
+        }
+
         $search = $request->query('search');
         $statusFilter = $request->query('status');
 
