@@ -442,8 +442,8 @@
                                         {{ $item['judul'] }}
                                     </td>
                                     <td class="py-3.5 px-4 whitespace-nowrap">
-                                        <span class="{{ $item['badge_class'] }} font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full inline-block border">
-                                            {{ $item['status'] }}
+                                        <span class="{{ $item['badge_class'] ?? 'bg-emerald-50 text-[#06612B] border-emerald-200/60' }} font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full inline-block border">
+                                            {{ $item['status'] ?? 'SELESAI' }}
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4 text-center whitespace-nowrap">

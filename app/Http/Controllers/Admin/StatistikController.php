@@ -45,6 +45,7 @@ class StatistikController extends Controller
                 'kategori' => 'Infrastruktur',
                 'judul' => 'Jalan berlubang di depan pasar...',
                 'status' => 'MENUNGGU',
+                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-200/60',
             ],
             [
                 'id' => '#PGD-0101',
@@ -54,6 +55,7 @@ class StatistikController extends Controller
                 'kategori' => 'Layanan Publik',
                 'judul' => 'Permohonan perbaikan lampu jalan...',
                 'status' => 'DIPROSES',
+                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-200/60',
             ],
             [
                 'id' => '#PGD-0100',
@@ -63,6 +65,7 @@ class StatistikController extends Controller
                 'kategori' => 'Keamanan',
                 'judul' => 'Pos ronda butuh perbaikan perabotan...',
                 'status' => 'SELESAI',
+                'badge_class' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
             ],
         ];
 
