@@ -52,6 +52,7 @@ class DashboardController extends Controller
                 'kategori' => 'Infrastruktur & Jalan',
                 'judul' => 'Jalan Berlubang di Dekat Perempatan Pasar',
                 'status' => 'MENUNGGU',
+                'badge_class' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
             ],
             [
                 'id' => 2,
@@ -63,6 +64,7 @@ class DashboardController extends Controller
                 'kategori' => 'Layanan Publik',
                 'judul' => 'Permohonan Perbaikan Penerangan Jalan RT 03',
                 'status' => 'MENUNGGU',
+                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-100',
             ],
             [
                 'id' => 3,
@@ -74,6 +76,7 @@ class DashboardController extends Controller
                 'kategori' => 'Kebersihan & Lingkungan',
                 'judul' => 'Saluran Drainase Tersumbat Sampah',
                 'status' => 'MENUNGGU',
+                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-100',
             ],
         ];
 

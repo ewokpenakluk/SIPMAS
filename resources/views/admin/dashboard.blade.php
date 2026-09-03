@@ -277,18 +277,18 @@
                                 @foreach ($perluVerifikasi as $item)
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="py-3.5 px-3 text-slate-600 font-normal whitespace-nowrap">
-                                            {{ $item['tanggal'] }}
+                                            {{ $item['tanggal'] ?? '-' }}
                                         </td>
                                         <td class="py-3.5 px-3 font-bold text-slate-900 whitespace-nowrap">
-                                            {{ $item['nama_warga'] }}
+                                            {{ $item['nama_warga'] ?? ($item['nama_pelapor'] ?? 'Warga') }}
                                         </td>
                                         <td class="py-3.5 px-3 whitespace-nowrap">
-                                            <span class="{{ $item['badge_class'] }} font-semibold text-[10px] px-2.5 py-0.5 rounded-full inline-block border">
-                                                {{ $item['kategori'] }}
+                                            <span class="{{ $item['badge_class'] ?? 'bg-emerald-50 text-emerald-700 border-emerald-100' }} font-semibold text-[10px] px-2.5 py-0.5 rounded-full inline-block border">
+                                                {{ $item['kategori'] ?? 'Umum' }}
                                             </span>
                                         </td>
                                         <td class="py-3.5 px-3 text-right whitespace-nowrap">
-                                            <a href="{{ route('pengaduan.lacak', ['tiket' => $item['tiket']]) }}" 
+                                            <a href="{{ route('admin.pengaduan.kelola') }}" 
                                                class="bg-[#80EE82] hover:bg-[#6ed970] text-[#06612B] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all inline-block shadow-xs">
                                                 Lihat Detail
                                             </a>
