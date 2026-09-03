@@ -16,11 +16,9 @@
                 Sampaikan aspirasi dan keluhan Anda secara langsung demi kemajuan desa kita bersama.
             </p>
             <div class="flex items-center gap-4 pt-2">
-                <a href="{{ route('pengaduan.buat') }}" class="bg-[#06612B] hover:bg-[#044920] text-white px-6 py-3.5 rounded-xl font-semibold text-xs tracking-wide shadow-md shadow-brand-dark/20 transition-all hover:-translate-y-0.5 inline-flex items-center justify-center">
-                    Ajukan Pengaduan
-                </a>
-                <a href="{{ route('pengaduan.lacak') }}" class="border-2 border-[#06612B] text-[#06612B] hover:bg-[#EAFCEB] px-6 py-3.5 rounded-xl font-semibold text-xs tracking-wide transition-all inline-flex items-center justify-center">
-                    Lacak Status
+                <a href="{{ route('login') }}" class="bg-[#06612B] hover:bg-[#044920] text-white px-7 py-3.5 rounded-xl font-semibold text-xs tracking-wide shadow-md shadow-brand-dark/20 transition-all hover:-translate-y-0.5 inline-flex items-center justify-center gap-2">
+                    <span>Masuk / Login</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
                 </a>
             </div>
         </div>
