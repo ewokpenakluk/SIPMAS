@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,24 +30,31 @@ class LoginController extends Controller
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $identifier = $request->login_identifier;
+        $identifier = trim($request->login_identifier);
         $password = $request->password;
 
-        // Coba autentikasi via NIK terlebih dahulu
-        if (Auth::attempt(['nik' => $identifier, 'password' => $password], $request->boolean('remember'))) {
+        // 1. Coba login via NIK atau Email
+        if (Auth::attempt(['nik' => $identifier, 'password' => $password], $request->boolean('remember')) ||
+            Auth::attempt(['email' => $identifier, 'password' => $password], $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali!');
         }
 
-        // Coba autentikasi via Email jika login_identifier berformat email atau bukan NIK
-        if (Auth::attempt(['email' => $identifier, 'password' => $password], $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali!');
+        // 2. Cek apakah akun dengan NIK / Email tersebut ADA di database
+        $userExists = User::where('nik', $identifier)
+            ->orWhere('email', $identifier)
+            ->exists();
+
+        // 3. Jika akun BELUM ADA (Masyarakat belum memiliki akun)
+        if (!$userExists) {
+            return redirect()->route('portal', ['tab' => 'daftar'])
+                ->with('info', "Akun ('$identifier') belum terdaftar. Silakan registrasi terlebih dahulu untuk membuat akun baru.")
+                ->withInput();
         }
 
-        // Jika keduanya gagal
+        // 4. Jika akun ADA tetapi password salah
         return back()->withErrors([
-            'login_identifier' => 'NIK / Username atau Kata Sandi yang Anda masukkan salah.',
+            'password' => 'Kata sandi yang Anda masukkan salah. Silakan periksa kembali.',
         ])->onlyInput('login_identifier');
     }
 }
