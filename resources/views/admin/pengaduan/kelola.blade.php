@@ -94,17 +94,10 @@
                     </a>
 
                     <!-- Statistik -->
-                    <a href="#" 
+                    <a href="{{ route('admin.statistik') }}" 
                        class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
                         <i class="fa-solid fa-chart-column text-slate-400 text-sm"></i>
                         <span>Statistik</span>
-                    </a>
-
-                    <!-- Pengaturan -->
-                    <a href="#" 
-                       class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
-                        <i class="fa-solid fa-gear text-slate-400 text-sm"></i>
-                        <span>Pengaturan</span>
                     </a>
                 </nav>
             </div>

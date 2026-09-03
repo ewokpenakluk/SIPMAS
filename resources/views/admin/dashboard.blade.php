@@ -86,27 +86,19 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <!-- Verifikasi Pengaduan -->
-                    <a href="#" 
-                       class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
-                        <i class="fa-regular fa-square-check text-slate-400 text-sm"></i>
-                        <span>Verifikasi Pengaduan</span>
-                    </a>
-
                     <!-- Laporan -->
-                    <a href="#" 
+                    <a href="{{ route('admin.pengaduan.kelola') }}" 
                        class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
                         <i class="fa-regular fa-file-lines text-slate-400 text-sm"></i>
                         <span>Laporan</span>
                     </a>
 
                     <!-- Statistik -->
-                    <a href="#" 
+                    <a href="{{ route('admin.statistik') }}" 
                        class="text-slate-600 hover:bg-slate-50 hover:text-[#06612B] font-medium text-xs px-4 py-3 rounded-xl flex items-center gap-3 transition-colors">
                         <i class="fa-solid fa-chart-column text-slate-400 text-sm"></i>
                         <span>Statistik</span>
                     </a>
-
                 </nav>
             </div>
 
