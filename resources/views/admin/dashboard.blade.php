@@ -162,25 +162,25 @@
                     @foreach ($perluVerifikasi as $item)
                         <tr class="hover:bg-slate-50/80 transition-colors">
                             <td class="py-3.5 px-4 font-bold text-slate-900">
-                                {{ $item['nomor_tiket'] }}
+                                {{ $item['nomor_tiket'] ?? ($item['tiket'] ?? 'LAP-2024-001') }}
                             </td>
                             <td class="py-3.5 px-4 text-slate-500">
-                                {{ $item['tanggal'] }}
+                                {{ $item['tanggal'] ?? '-' }}
                             </td>
                             <td class="py-3.5 px-4 font-semibold text-slate-900">
-                                {{ $item['nama_pelapor'] }}
+                                {{ $item['nama_pelapor'] ?? ($item['nama_warga'] ?? 'Masyarakat') }}
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
-                                    {{ $item['kategori'] }}
+                                    {{ $item['kategori'] ?? 'Umum' }}
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 max-w-xs truncate text-slate-800">
-                                {{ $item['judul'] }}
+                                {{ $item['judul'] ?? 'Pengaduan Masuk' }}
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase">
-                                    {{ $item['status'] }}
+                                    {{ $item['status'] ?? 'MENUNGGU' }}
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 text-center">

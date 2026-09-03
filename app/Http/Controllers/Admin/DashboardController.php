@@ -29,7 +29,7 @@ class DashboardController extends Controller
             'selesai' => 69,
         ];
 
-        // Sample tren pengaduan mingguan (Persentase / Nilai bar)
+        // Sample tren pengaduan mingguan
         $trenMingguan = [
             ['hari' => 'Sen', 'nilai' => 35],
             ['hari' => 'Sel', 'nilai' => 60],
@@ -43,25 +43,31 @@ class DashboardController extends Controller
         // Sample pengaduan terbaru yang perlu verifikasi
         $perluVerifikasi = [
             [
-                'tanggal' => '12 Okt 2024',
-                'nama_warga' => 'Siti Aminah',
-                'kategori' => 'Infrastruktur',
-                'badge_class' => 'bg-rose-50 text-rose-600 border-rose-100',
-                'tiket' => 'SGH-20241012-001',
+                'id' => 1,
+                'nomor_tiket' => 'LAP-2024-089',
+                'tanggal' => '24 Okt 2024',
+                'nama_pelapor' => 'Budi Santoso',
+                'kategori' => 'Infrastruktur & Jalan',
+                'judul' => 'Jalan Berlubang di Dekat Perempatan Pasar',
+                'status' => 'MENUNGGU',
             ],
             [
-                'tanggal' => '11 Okt 2024',
-                'nama_warga' => 'Agus Supriyadi',
-                'kategori' => 'Keamanan Lingkungan',
-                'badge_class' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                'tiket' => 'SGH-20241011-042',
+                'id' => 2,
+                'nomor_tiket' => 'LAP-2024-088',
+                'tanggal' => '23 Okt 2024',
+                'nama_pelapor' => 'Siti Aminah',
+                'kategori' => 'Layanan Publik',
+                'judul' => 'Permohonan Perbaikan Penerangan Jalan RT 03',
+                'status' => 'MENUNGGU',
             ],
             [
-                'tanggal' => '10 Okt 2024',
-                'nama_warga' => 'Rini Astuti',
-                'kategori' => 'Kebersihan',
-                'badge_class' => 'bg-rose-50 text-rose-600 border-rose-100',
-                'tiket' => 'SGH-20241010-088',
+                'id' => 3,
+                'nomor_tiket' => 'LAP-2024-087',
+                'tanggal' => '22 Okt 2024',
+                'nama_pelapor' => 'Agus Supriyadi',
+                'kategori' => 'Kebersihan & Lingkungan',
+                'judul' => 'Saluran Drainase Tersumbat Sampah',
+                'status' => 'MENUNGGU',
             ],
         ];
 
