@@ -14,6 +14,12 @@ class RiwayatController extends Controller
      */
     public function index(Request $request)
     {
+        // Proteksi: Akun Admin tidak boleh masuk ke halaman masyarakat
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
+        }
+
         if (!Auth::check()) {
             return redirect()->route('portal', ['tab' => 'daftar']);
         }
@@ -28,29 +34,35 @@ class RiwayatController extends Controller
             [
                 'nomor_tiket' => '#TKT-20231024-001',
                 'raw_tiket' => 'TKT-20231024-001',
-                'tanggal' => '24 Okt 2023, 14:30',
+                'tanggal' => '24 Okt 2023',
+                'judul' => 'Lampu Jalan Mati di Perempatan RT 03',
                 'kategori' => 'Infrastruktur',
-                'status' => 'SELESAI',
-                'badge_class' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                'status' => 'diproses',
+                'status_label' => 'Diproses',
+                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-200/60',
             ],
             [
-                'nomor_tiket' => '#TKT-20231025-042',
-                'raw_tiket' => 'TKT-20231025-042',
-                'tanggal' => '25 Okt 2023, 09:15',
-                'kategori' => 'Lingkungan',
-                'status' => 'DIPROSES',
-                'badge_class' => 'bg-slate-100 text-slate-600 border-slate-200',
+                'nomor_tiket' => '#TKT-20231015-042',
+                'raw_tiket' => 'TKT-20231015-042',
+                'tanggal' => '15 Okt 2023',
+                'judul' => 'Penumpukan Sampah Liar di Lapangan Desa',
+                'kategori' => 'Kebersihan',
+                'status' => 'selesai',
+                'status_label' => 'Selesai',
+                'badge_class' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
             ],
             [
-                'nomor_tiket' => '#TKT-20231026-088',
-                'raw_tiket' => 'TKT-20231026-088',
-                'tanggal' => '26 Okt 2023, 16:45',
-                'kategori' => 'Pelayanan Publik',
-                'status' => 'MENUNGGU',
-                'badge_class' => 'bg-rose-50 text-rose-600 border-rose-100',
+                'nomor_tiket' => '#TKT-20231002-088',
+                'raw_tiket' => 'TKT-20231002-088',
+                'tanggal' => '02 Okt 2023',
+                'judul' => 'Permohonan Ronda Malam Tambahan',
+                'kategori' => 'Keamanan',
+                'status' => 'menunggu',
+                'status_label' => 'Menunggu',
+                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-200/60',
             ],
         ];
 
-        return view('warga.riwayat', compact('search', 'statusFilter', 'sampleRiwayat'));
+        return view('warga.riwayat', compact('sampleRiwayat', 'search', 'statusFilter'));
     }
 }

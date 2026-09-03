@@ -38,7 +38,15 @@ class LoginController extends Controller
             Auth::attempt(['email' => $identifier, 'password' => $password], $request->boolean('remember'))) {
             $request->session()->regenerate();
             $user = Auth::user();
-            return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Warga') . '!');
+
+            // Jika akun adalah Admin / Superadmin, lempar ke Admin Dashboard
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Selamat datang di Admin Panel, ' . ($user->nama ?? 'Admin') . '!');
+            }
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Warga') . '!');
         }
 
         // 2. Cek apakah akun dengan NIK / Email tersebut ADA di database

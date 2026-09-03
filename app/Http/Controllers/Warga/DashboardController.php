@@ -13,6 +13,12 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Proteksi: Akun Admin tidak boleh masuk ke halaman masyarakat
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
+        }
+
         // Ambil nama user login atau default Budi Santoso untuk sampel tampilan
         $user = Auth::user();
         $namaWarga = $user ? $user->nama : 'Budi Santoso';
@@ -36,12 +42,6 @@ class DashboardController extends Controller
                 'judul' => 'Saluran Air Tersumbat',
                 'kategori' => 'Lingkungan',
                 'tanggal' => '05 Okt 2023, 09:15',
-                'status' => 'selesai',
-            ],
-            [
-                'judul' => 'Jalan Berlubang di Dekat Balai Desa',
-                'kategori' => 'Infrastruktur',
-                'tanggal' => '28 Sep 2023, 11:00',
                 'status' => 'selesai',
             ],
         ];

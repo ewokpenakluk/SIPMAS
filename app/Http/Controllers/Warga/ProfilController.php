@@ -13,6 +13,12 @@ class ProfilController extends Controller
      */
     public function index()
     {
+        // Proteksi: Akun Admin tidak boleh masuk ke halaman masyarakat
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
+        }
+
         $user = Auth::user();
 
         // Data sampel warga jika belum login
@@ -34,25 +40,26 @@ class ProfilController extends Controller
      */
     public function update(Request $request)
     {
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat.');
+        }
+
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'alamat' => ['required', 'string'],
-            'no_hp' => ['required', 'string', 'max:15'],
-        ], [
-            'nama.required' => 'Nama lengkap wajib diisi.',
-            'alamat.required' => 'Alamat lengkap wajib diisi.',
-            'no_hp.required' => 'Nomor telepon wajib diisi.',
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'required|string|max:15',
+            'alamat' => 'required|string',
         ]);
 
         $user = Auth::user();
         if ($user) {
             $user->update([
                 'nama' => $request->nama,
-                'alamat' => $request->alamat,
                 'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
             ]);
         }
 
-        return redirect()->route('profil')->with('success', 'Profil Anda berhasil diperbarui!');
+        return back()->with('success', 'Profil Anda telah berhasil diperbarui!');
     }
 }

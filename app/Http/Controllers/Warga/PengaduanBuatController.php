@@ -15,6 +15,12 @@ class PengaduanBuatController extends Controller
      */
     public function create()
     {
+        // Proteksi: Akun Admin tidak boleh masuk ke halaman masyarakat
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
+        }
+
         if (!Auth::check()) {
             return redirect()->route('portal', ['tab' => 'daftar']);
         }
@@ -35,33 +41,33 @@ class PengaduanBuatController extends Controller
     }
 
     /**
-     * Simpan pengaduan baru yang dikirimkan warga.
+     * Simpan pengaduan baru dari warga ke database.
      */
     public function store(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect()->route('portal', ['tab' => 'daftar']);
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Akun Admin tidak diizinkan membuat pengaduan masyarakat.');
         }
 
         $request->validate([
-            'kategori_id' => ['required'],
-            'deskripsi' => ['required', 'string', 'min:10'],
-            'lokasi' => ['required', 'string'],
-            'tanggal_kejadian' => ['required', 'date'],
-            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:5120'],
+            'kategori_id' => 'required',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'lokasi' => 'nullable|string|max:255',
+            'tanggal_kejadian' => 'nullable|date',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ], [
-            'kategori_id.required' => 'Kategori masalah wajib dipilih.',
-            'deskripsi.required' => 'Deskripsi masalah wajib diisi.',
-            'deskripsi.min' => 'Deskripsi masalah minimal 10 karakter.',
-            'lokasi.required' => 'Lokasi / alamat kejadian wajib diisi.',
-            'tanggal_kejadian.required' => 'Tanggal kejadian wajib diisi.',
+            'kategori_id.required' => 'Silakan pilih kategori pengaduan.',
+            'judul.required' => 'Judul pengaduan wajib diisi.',
+            'deskripsi.required' => 'Deskripsi pengaduan wajib diisi.',
             'foto.image' => 'File bukti harus berupa gambar.',
-            'foto.max' => 'Ukuran foto maksimal 5MB.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
         ]);
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('pengaduan', 'public');
+            $fotoPath = $request->file('foto')->store('pengaduan_foto', 'public');
         }
 
         $user = Auth::user();
@@ -69,18 +75,18 @@ class PengaduanBuatController extends Controller
         $pengaduan = Pengaduan::create([
             'kategori_id' => $request->kategori_id,
             'pengguna_id' => $user ? $user->id : null,
-            'nama_pelapor' => $user ? $user->nama : 'Masyarakat Sagalaherang',
-            'nik' => $user ? $user->nik : '3213XXXXXXXXXXXX',
-            'no_hp' => $user ? $user->no_hp : '081234567890',
-            'alamat' => $user ? $user->alamat : 'Desa Sagalaherang',
-            'judul' => mb_strimwidth($request->deskripsi, 0, 50, '...'),
+            'nama_pelapor' => $user ? $user->nama : 'Warga Sagalaherang',
+            'nik' => $user ? ($user->nik ?? '3213000000000000') : '3213000000000000',
+            'no_hp' => $user ? ($user->no_hp ?? '081234567890') : '081234567890',
+            'alamat' => $user ? ($user->alamat ?? 'Desa Sagalaherang') : 'Desa Sagalaherang',
+            'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'lokasi' => $request->lokasi,
             'foto' => $fotoPath,
             'status' => 'menunggu',
         ]);
 
-        return redirect()->route('pengaduan.lacak', ['tiket' => $pengaduan->nomor_tiket])
-            ->with('success', 'Pengaduan berhasil diajukan! Nomor tiket Anda: ' . $pengaduan->nomor_tiket);
+        return redirect()->route('riwayat')
+            ->with('success', 'Pengaduan Anda berhasil dikirim dengan Nomor Tiket #' . $pengaduan->nomor_tiket . '! Tim desa akan segera menindaklanjuti.');
     }
 }
