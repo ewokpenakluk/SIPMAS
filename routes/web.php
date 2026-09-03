@@ -68,13 +68,20 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
-// Logout
+// Logout Warga & Admin
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect()->route('beranda')->with('success', 'Anda telah berhasil keluar.');
 })->name('logout');
+
+Route::post('/admin/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('admin.login')->with('success', 'Anda telah berhasil keluar dari Admin Panel.');
+})->name('admin.logout');
 
 // Placeholder routes untuk navigasi & fitur warga
 Route::get('/kontak', function () {

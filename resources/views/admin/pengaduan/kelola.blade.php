@@ -106,7 +106,7 @@
             <div class="mt-auto space-y-3 pt-6 border-t border-slate-100">
 
                 <!-- Tombol Logout -->
-                <form action="{{ route('logout') }}" method="POST">
+                <form action="{{ route('admin.logout') }}" method="POST">
                     @csrf
                     <button type="submit" 
                             class="w-full flex items-center justify-start gap-2.5 px-3 py-2.5 text-xs font-semibold text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all">
