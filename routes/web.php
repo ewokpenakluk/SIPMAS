@@ -18,44 +18,47 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
-// Dashboard Admin Panel & Admin Login
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin', [AdminDashboardController::class, 'index']);
+// ==========================================
+// RUTE ADMIN PANEL (TERSTRUKTUR & TERTATA)
+// ==========================================
+Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // Auth Login Admin
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminLoginController::class, 'login']);
 
-Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AdminLoginController::class, 'login']);
+    // Admin Authenticated Routes
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index']);
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // Kelola & Verifikasi Pengaduan
+        Route::get('/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('pengaduan.kelola');
+        Route::get('/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('pengaduan.show');
+        Route::post('/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('pengaduan.update');
+        
+        // Rekapitulasi Data & Statistik
+        Route::get('/statistik', [AdminStatistikController::class, 'index'])->name('statistik');
+    });
 
-// Kelola Pengaduan Admin
-Route::get('/admin/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.kelola');
-Route::get('/admin/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.show');
-Route::post('/admin/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('admin.pengaduan.update');
+});
 
-// Statistik & Rekapitulasi Data Admin
-Route::get('/admin/statistik', [AdminStatistikController::class, 'index'])->name('admin.statistik');
-
-// Dashboard Warga (User Terautentikasi / Sample Tampilan)
+// ==========================================
+// RUTE WARGA / MASYARAKAT
+// ==========================================
 Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
-
-// Profil Akun Warga
 Route::get('/profil', [WargaProfilController::class, 'index'])->name('profil');
 Route::post('/profil', [WargaProfilController::class, 'update'])->name('profil.update');
-
-// Riwayat Pengaduan Warga
 Route::get('/riwayat', [WargaRiwayatController::class, 'index'])->name('riwayat');
-
-// Form Buat Pengaduan Baru Warga
 Route::get('/pengaduan/buat', [WargaPengaduanBuatController::class, 'create'])->name('pengaduan.buat');
 Route::post('/pengaduan/buat', [WargaPengaduanBuatController::class, 'store'])->name('pengaduan.store');
-
-// Lacak Status Pengaduan
 Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
 Route::get('/lacak', [LacakStatusController::class, 'index']);
 
-// Auth Routes (Portal Login & Daftar Toggle)
+// Auth Routes Warga (Portal Login & Daftar Toggle)
 Route::middleware('guest')->group(function () {
     Route::get('/portal', [PortalController::class, 'index'])->name('portal');
     
-    // Rute Login & Register mengarahkan ke portal dengan tab terintegrasi
     Route::get('/login', function () {
         return redirect()->route('portal', ['tab' => 'masuk']);
     })->name('login');
@@ -68,7 +71,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
-// Logout
+// Logout User / Admin
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
@@ -76,7 +79,7 @@ Route::post('/logout', function () {
     return redirect()->route('beranda')->with('success', 'Anda telah berhasil keluar.');
 })->name('logout');
 
-// Placeholder routes untuk navigasi & fitur warga
+// Footer & Static Info Routes
 Route::get('/kontak', function () {
     return view('beranda');
 })->name('kontak');
