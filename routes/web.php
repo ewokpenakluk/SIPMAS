@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PortalController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Warga\RiwayatController as WargaRiwayatController;
 use App\Http\Controllers\Warga\ProfilController as WargaProfilController;
+use App\Http\Controllers\Warga\PengaduanBuatController as WargaPengaduanBuatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\PengaduanController as AdminPengaduanController;
@@ -42,6 +43,10 @@ Route::post('/profil', [WargaProfilController::class, 'update'])->name('profil.u
 // Riwayat Pengaduan Warga
 Route::get('/riwayat', [WargaRiwayatController::class, 'index'])->name('riwayat');
 
+// Form Buat Pengaduan Baru Warga
+Route::get('/pengaduan/buat', [WargaPengaduanBuatController::class, 'create'])->name('pengaduan.buat');
+Route::post('/pengaduan/buat', [WargaPengaduanBuatController::class, 'store'])->name('pengaduan.store');
+
 // Lacak Status Pengaduan
 Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
 Route::get('/lacak', [LacakStatusController::class, 'index']);
@@ -72,13 +77,6 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // Placeholder routes untuk navigasi & fitur warga
-Route::get('/pengaduan/buat', function () {
-    if (!Auth::check()) {
-        return redirect()->route('portal', ['tab' => 'daftar']);
-    }
-    return view('warga.dashboard');
-})->name('pengaduan.buat');
-
 Route::get('/kontak', function () {
     return view('beranda');
 })->name('kontak');
