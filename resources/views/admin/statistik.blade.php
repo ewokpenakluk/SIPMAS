@@ -111,12 +111,6 @@
 
             <!-- BOTTOM SECTION SIDEBAR (mt-auto) -->
             <div class="mt-auto space-y-3 pt-6 border-t border-slate-100">
-                <!-- Tombol + Buat Laporan -->
-                <a href="{{ route('pengaduan.buat') }}" 
-                   class="w-full bg-[#06612B] hover:bg-[#044920] text-white font-semibold text-xs py-3.5 px-4 rounded-full flex items-center justify-center gap-2 shadow-sm transition-all hover:shadow-md active:scale-[0.99]">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Buat Laporan</span>
-                </a>
 
                 <!-- Tombol Logout -->
                 <form action="{{ route('logout') }}" method="POST">
