@@ -15,6 +15,10 @@ class PengaduanController extends Controller
      */
     public function show($id = null)
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('admin.login')
+                ->with('error', 'Silakan masuk sebagai admin terlebih dahulu untuk mengakses Admin Panel.');
+        }
         // Sample data pengaduan sesuai mockup #LAP-2024-089
         $laporan = [
             'id' => $id ?? 1,

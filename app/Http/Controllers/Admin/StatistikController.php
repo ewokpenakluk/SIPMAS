@@ -12,6 +12,11 @@ class StatistikController extends Controller
      */
     public function index(Request $request)
     {
+        if (!\Illuminate\Support\Facades\Auth::check() || !\Illuminate\Support\Facades\Auth::user()->isAdmin()) {
+            return redirect()->route('admin.login')
+                ->with('error', 'Silakan masuk sebagai admin terlebih dahulu untuk mengakses Admin Panel.');
+        }
+
         $rentangWaktu = $request->query('rentang', 'bulan_ini');
         $kategori = $request->query('kategori');
         $status = $request->query('status');

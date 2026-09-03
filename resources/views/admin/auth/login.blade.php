@@ -30,6 +30,21 @@
                 </p>
             </div>
 
+            <!-- SESSION ERROR / SUCCESS ALERT -->
+            @if (session('error'))
+                <div class="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-amber-600"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             <!-- ERROR ALERT -->
             @if ($errors->any())
                 <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-100 text-rose-700 text-xs">

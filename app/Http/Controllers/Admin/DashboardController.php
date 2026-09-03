@@ -14,6 +14,11 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('admin.login')
+                ->with('error', 'Silakan masuk sebagai admin terlebih dahulu untuk mengakses Admin Panel.');
+        }
+
         $adminUser = Auth::user();
 
         // Sample data statistik sesuai mockup
