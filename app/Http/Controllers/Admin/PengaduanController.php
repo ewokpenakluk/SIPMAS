@@ -19,32 +19,81 @@ class PengaduanController extends Controller
             return redirect()->route('admin.login')
                 ->with('error', 'Silakan masuk sebagai admin terlebih dahulu untuk mengakses Admin Panel.');
         }
-        // Sample data pengaduan sesuai mockup #LAP-2024-089
+
+        // Cari pengaduan berdasarkan ID, atau ambil pengaduan terbaru
+        $pengaduanModel = null;
+        if ($id) {
+            $pengaduanModel = Pengaduan::with(['kategori', 'pengguna', 'tanggapan.pengguna'])->find($id);
+        }
+
+        if (!$pengaduanModel) {
+            $pengaduanModel = Pengaduan::with(['kategori', 'pengguna', 'tanggapan.pengguna'])
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }
+
+        if (!$pengaduanModel) {
+            $laporan = [
+                'id' => 1,
+                'nomor_tiket' => 'ADU-2024-001',
+                'nama_pelapor' => 'Budi Santoso',
+                'kategori' => 'Infrastruktur & Jalan',
+                'tanggal_dilaporkan' => date('d M Y, H:i') . ' WIB',
+                'lokasi' => 'Jl. Raya Sagalaherang No. 45',
+                'status' => 'menunggu',
+                'status_label' => 'Menunggu Verifikasi',
+                'deskripsi' => 'Pengaduan sampel belum tersedia.',
+                'catatan_admin' => null,
+                'bukti_foto' => 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop',
+                'riwayat_perubahan' => [
+                    [
+                        'judul' => 'Laporan Dibuat',
+                        'oleh' => 'Sistem',
+                        'waktu' => date('d M Y, H:i') . ' WIB',
+                        'state' => 'created',
+                    ]
+                ]
+            ];
+            return view('admin.pengaduan.kelola', compact('laporan'));
+        }
+
+        // Susun riwayat audit log perubahan dari tanggapan
+        $riwayatList = [];
+        $riwayatList[] = [
+            'judul' => 'Laporan Dibuat oleh Warga',
+            'oleh' => $pengaduanModel->nama_pelapor . ' (Pelapor)',
+            'waktu' => $pengaduanModel->created_at ? $pengaduanModel->created_at->format('d M Y, H:i') . ' WIB' : '-',
+            'state' => 'created',
+        ];
+
+        foreach ($pengaduanModel->tanggapan as $t) {
+            $riwayatList[] = [
+                'judul' => 'Status Diperbarui: ' . strtoupper($t->status_diubah_ke ?? $pengaduanModel->status),
+                'oleh' => ($t->pengguna->nama ?? 'Admin') . ' — "' . $t->pesan . '"',
+                'waktu' => $t->created_at ? $t->created_at->format('d M Y, H:i') . ' WIB' : '-',
+                'state' => 'updated',
+            ];
+        }
+
+        // Tentukan foto URL (storage atau fallback image)
+        $fotoUrl = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop';
+        if ($pengaduanModel->foto) {
+            $fotoUrl = asset('storage/' . $pengaduanModel->foto);
+        }
+
         $laporan = [
-            'id' => $id ?? 1,
-            'nomor_tiket' => 'LAP-2024-089',
-            'nama_pelapor' => 'Budi Santoso',
-            'kategori' => 'Infrastruktur & Jalan',
-            'tanggal_dilaporkan' => '24 Okt 2024, 14:30 WIB',
-            'lokasi' => 'Jl. Raya Sagalaherang No. 45',
-            'status' => 'menunggu', // menunggu, diproses, selesai, ditolak
-            'status_label' => 'Menunggu Verifikasi',
-            'deskripsi' => 'Terdapat jalan berlubang yang cukup dalam di dekat perempatan pasar desa. Sangat membahayakan pengendara motor terutama saat malam hari karena minimnya penerangan di area tersebut. Mohon segera ditindaklanjuti sebelum ada korban jiwa.',
-            'bukti_foto' => 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop',
-            'riwayat_perubahan' => [
-                [
-                    'judul' => 'Laporan Dibuat',
-                    'oleh' => 'Budi Santoso (Pelapor)',
-                    'waktu' => '24 Okt 2024, 14:30 WIB',
-                    'state' => 'created',
-                ],
-                [
-                    'judul' => 'Status Diperbarui: Menunggu Verifikasi',
-                    'oleh' => 'Sistem',
-                    'waktu' => '24 Okt 2024, 14:35 WIB',
-                    'state' => 'updated',
-                ],
-            ]
+            'id' => $pengaduanModel->id,
+            'nomor_tiket' => $pengaduanModel->nomor_tiket,
+            'nama_pelapor' => $pengaduanModel->nama_pelapor,
+            'kategori' => $pengaduanModel->kategori->nama ?? 'Umum',
+            'tanggal_dilaporkan' => $pengaduanModel->created_at ? $pengaduanModel->created_at->format('d M Y, H:i') . ' WIB' : date('d M Y, H:i') . ' WIB',
+            'lokasi' => $pengaduanModel->lokasi ?? 'Desa Sagalaherang',
+            'status' => $pengaduanModel->status,
+            'status_label' => ucfirst($pengaduanModel->status),
+            'deskripsi' => $pengaduanModel->deskripsi,
+            'catatan_admin' => $pengaduanModel->catatan_admin,
+            'bukti_foto' => $fotoUrl,
+            'riwayat_perubahan' => $riwayatList,
         ];
 
         return view('admin.pengaduan.kelola', compact('laporan'));
@@ -55,11 +104,36 @@ class PengaduanController extends Controller
      */
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => ['required', 'string'],
-            'pesan' => ['nullable', 'string'],
-        ]);
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('admin.login')
+                ->with('error', 'Silakan masuk sebagai admin terlebih dahulu.');
+        }
 
-        return redirect()->back()->with('success', 'Status pengaduan dan tanggapan admin berhasil disimpan!');
+        $pengaduan = Pengaduan::find($id);
+        if (!$pengaduan) {
+            return redirect()->back()->with('error', 'Data pengaduan tidak ditemukan.');
+        }
+
+        $newStatus = $request->status;
+        if ($request->action === 'tolak') {
+            $newStatus = 'ditolak';
+        }
+
+        $pesanTanggapan = $request->pesan ?? $request->tanggapan;
+
+        $pengaduan->status = $newStatus;
+        if (!empty($pesanTanggapan)) {
+            $pengaduan->catatan_admin = $pesanTanggapan;
+
+            Tanggapan::create([
+                'pengaduan_id' => $pengaduan->id,
+                'pengguna_id' => Auth::id(),
+                'pesan' => $pesanTanggapan,
+                'status_diubah_ke' => $newStatus,
+            ]);
+        }
+        $pengaduan->save();
+
+        return redirect()->back()->with('success', 'Status pengaduan #' . $pengaduan->nomor_tiket . ' dan tanggapan admin berhasil diperbarui!');
     }
 }

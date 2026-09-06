@@ -21,15 +21,20 @@ class DashboardController extends Controller
 
         $adminUser = Auth::user();
 
-        // Sample data statistik sesuai mockup
+        // Hitung real metrics dari database pengaduan
+        $totalMasuk = Pengaduan::count();
+        $belumDiverifikasi = Pengaduan::where('status', 'menunggu')->count();
+        $sedangDiproses = Pengaduan::whereIn('status', ['diproses', 'diterima'])->count();
+        $selesai = Pengaduan::where('status', 'selesai')->count();
+
         $metrics = [
-            'total_masuk' => 142,
-            'belum_diverifikasi' => 28,
-            'sedang_diproses' => 45,
-            'selesai' => 69,
+            'total_masuk' => $totalMasuk,
+            'belum_diverifikasi' => $belumDiverifikasi,
+            'sedang_diproses' => $sedangDiproses,
+            'selesai' => $selesai,
         ];
 
-        // Sample tren pengaduan mingguan
+        // Tren mingguan
         $trenMingguan = [
             ['hari' => 'Sen', 'nilai' => 35],
             ['hari' => 'Sel', 'nilai' => 60],
@@ -40,45 +45,33 @@ class DashboardController extends Controller
             ['hari' => 'Min', 'nilai' => 15],
         ];
 
-        // Sample pengaduan terbaru yang perlu verifikasi
-        $perluVerifikasi = [
-            [
-                'id' => 1,
-                'nomor_tiket' => 'LAP-2024-089',
-                'tiket' => 'LAP-2024-089',
-                'tanggal' => '24 Okt 2024',
-                'nama_pelapor' => 'Budi Santoso',
-                'nama_warga' => 'Budi Santoso',
-                'kategori' => 'Infrastruktur & Jalan',
-                'judul' => 'Jalan Berlubang di Dekat Perempatan Pasar',
-                'status' => 'MENUNGGU',
-                'badge_class' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-            ],
-            [
-                'id' => 2,
-                'nomor_tiket' => 'LAP-2024-088',
-                'tiket' => 'LAP-2024-088',
-                'tanggal' => '23 Okt 2024',
-                'nama_pelapor' => 'Siti Aminah',
-                'nama_warga' => 'Siti Aminah',
-                'kategori' => 'Layanan Publik',
-                'judul' => 'Permohonan Perbaikan Penerangan Jalan RT 03',
-                'status' => 'MENUNGGU',
-                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-100',
-            ],
-            [
-                'id' => 3,
-                'nomor_tiket' => 'LAP-2024-087',
-                'tiket' => 'LAP-2024-087',
-                'tanggal' => '22 Okt 2024',
-                'nama_pelapor' => 'Agus Supriyadi',
-                'nama_warga' => 'Agus Supriyadi',
-                'kategori' => 'Kebersihan & Lingkungan',
-                'judul' => 'Saluran Drainase Tersumbat Sampah',
-                'status' => 'MENUNGGU',
-                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-100',
-            ],
-        ];
+        // Ambil pengaduan terbaru dari database yang memerlukan verifikasi
+        $latestPengaduan = Pengaduan::with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        $perluVerifikasi = $latestPengaduan->map(function ($item) {
+            $badgeClass = match ($item->status) {
+                'diproses' => 'bg-blue-50 text-blue-700 border-blue-100',
+                'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-100',
+                default => 'bg-amber-50 text-amber-700 border-amber-100',
+            };
+
+            return [
+                'id' => $item->id,
+                'nomor_tiket' => $item->nomor_tiket,
+                'tiket' => $item->nomor_tiket,
+                'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
+                'nama_pelapor' => $item->nama_pelapor,
+                'nama_warga' => $item->nama_pelapor,
+                'kategori' => $item->kategori->nama ?? 'Umum',
+                'judul' => $item->judul,
+                'status' => strtoupper($item->status),
+                'badge_class' => $badgeClass,
+            ];
+        })->toArray();
 
         return view('admin.dashboard', compact('adminUser', 'metrics', 'trenMingguan', 'perluVerifikasi'));
     }

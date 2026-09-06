@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,52 +23,51 @@ class StatistikController extends Controller
         $kategori = $request->query('kategori');
         $status = $request->query('status');
 
-        // Sample metrics data
+        $totalPengaduan = Pengaduan::count();
+        $menungguProses = Pengaduan::where('status', 'menunggu')->count();
+        $sedangDiproses = Pengaduan::whereIn('status', ['diproses', 'diterima'])->count();
+        $selesaiDitangani = Pengaduan::where('status', 'selesai')->count();
+
         $metrics = [
-            'total_pengaduan' => 142,
+            'total_pengaduan' => $totalPengaduan,
             'total_growth' => '+12% dari bulan lalu',
-            'menunggu_proses' => 28,
+            'menunggu_proses' => $menungguProses,
             'menunggu_note' => 'Butuh perhatian',
-            'sedang_diproses' => 45,
+            'sedang_diproses' => $sedangDiproses,
             'diproses_note' => 'Dalam pengerjaan tim',
-            'selesai_ditangani' => 69,
+            'selesai_ditangani' => $selesaiDitangani,
             'selesai_note' => 'Tingkat resolusi 85%',
             'resolusi_rate' => 'Tingkat resolusi 85%',
         ];
 
-        // Sample data tabel detail pengaduan
-        $rekapTable = [
-            [
-                'id' => '#PGD-0102',
-                'raw_id' => 102,
-                'tanggal' => '24 Okt 2024',
-                'pelapor' => 'Budi Santoso',
-                'kategori' => 'Infrastruktur',
-                'judul' => 'Jalan berlubang di depan pasar...',
-                'status' => 'MENUNGGU',
-                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-200/60',
-            ],
-            [
-                'id' => '#PGD-0101',
-                'raw_id' => 101,
-                'tanggal' => '23 Okt 2024',
-                'pelapor' => 'Siti Aminah',
-                'kategori' => 'Layanan Publik',
-                'judul' => 'Permohonan perbaikan lampu jalan...',
-                'status' => 'DIPROSES',
-                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-200/60',
-            ],
-            [
-                'id' => '#PGD-0100',
-                'raw_id' => 100,
-                'tanggal' => '22 Okt 2024',
-                'pelapor' => 'Agus Supriyadi',
-                'kategori' => 'Keamanan',
-                'judul' => 'Pos ronda butuh perbaikan perabotan...',
-                'status' => 'SELESAI',
-                'badge_class' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
-            ],
-        ];
+        // Query pengaduan list untuk tabel rekapitulasi
+        $query = Pengaduan::with('kategori')->orderBy('created_at', 'desc');
+
+        if (!empty($status)) {
+            $query->where('status', strtolower($status));
+        }
+
+        $pengaduanList = $query->get();
+
+        $rekapTable = $pengaduanList->map(function ($item) {
+            $badgeClass = match ($item->status) {
+                'diproses' => 'bg-blue-50 text-blue-700 border-blue-200/60',
+                'selesai' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
+                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200/60',
+                default => 'bg-amber-50 text-amber-700 border-amber-200/60',
+            };
+
+            return [
+                'id' => '#' . $item->nomor_tiket,
+                'raw_id' => $item->id,
+                'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
+                'pelapor' => $item->nama_pelapor,
+                'kategori' => $item->kategori->nama ?? 'Umum',
+                'judul' => $item->judul,
+                'status' => strtoupper($item->status),
+                'badge_class' => $badgeClass,
+            ];
+        })->toArray();
 
         $detailData = $rekapTable;
 

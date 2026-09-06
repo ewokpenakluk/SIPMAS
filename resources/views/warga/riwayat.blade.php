@@ -57,6 +57,7 @@
                     <tr class="bg-slate-50/80 border-b border-slate-100 text-xs font-bold text-slate-600">
                         <th class="py-4 px-6">Nomor Tiket</th>
                         <th class="py-4 px-6">Tanggal</th>
+                        <th class="py-4 px-6">Judul Masalah</th>
                         <th class="py-4 px-6">Kategori</th>
                         <th class="py-4 px-6">Status</th>
                         <th class="py-4 px-6 text-center">Aksi</th>
@@ -75,6 +76,11 @@
                             <!-- Tanggal -->
                             <td class="py-4 px-6 text-slate-600 font-normal whitespace-nowrap">
                                 {{ $item['tanggal'] }}
+                            </td>
+
+                            <!-- Judul -->
+                            <td class="py-4 px-6 text-slate-800 font-semibold max-w-xs truncate">
+                                {{ $item['judul'] ?? '-' }}
                             </td>
 
                             <!-- Kategori -->
@@ -99,7 +105,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-12 text-center text-slate-400">
+                            <td colspan="6" class="py-12 text-center text-slate-400">
                                 <i class="fa-regular fa-folder-open text-2xl mb-2 block"></i>
                                 Belum ada riwayat pengaduan yang ditemukan.
                             </td>

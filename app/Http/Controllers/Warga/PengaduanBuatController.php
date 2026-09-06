@@ -25,12 +25,12 @@ class PengaduanBuatController extends Controller
             return redirect()->route('portal', ['tab' => 'daftar']);
         }
 
-        // Ambil daftar kategori dari database (atau fallback sample)
+        // Ambil daftar kategori dari database
         $kategoriList = Kategori::all();
         if ($kategoriList->isEmpty()) {
             $kategoriList = collect([
                 (object)['id' => 1, 'nama' => 'Infrastruktur & Jalan'],
-                (object)['id' => 2, 'nama' => 'Layanan Publik'],
+                (object)['id' => 2, 'nama' => 'Pelayanan Publik'],
                 (object)['id' => 3, 'nama' => 'Keamanan & Ketertiban'],
                 (object)['id' => 4, 'nama' => 'Kebersihan & Lingkungan'],
                 (object)['id' => 5, 'nama' => 'Lain-lain'],
@@ -48,6 +48,10 @@ class PengaduanBuatController extends Controller
         if (Auth::check() && Auth::user()->isAdmin()) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'Akun Admin tidak diizinkan membuat pengaduan masyarakat.');
+        }
+
+        if (!Auth::check()) {
+            return redirect()->route('portal', ['tab' => 'masuk']);
         }
 
         $request->validate([
@@ -74,14 +78,14 @@ class PengaduanBuatController extends Controller
 
         $pengaduan = Pengaduan::create([
             'kategori_id' => $request->kategori_id,
-            'pengguna_id' => $user ? $user->id : null,
-            'nama_pelapor' => $user ? $user->nama : 'Warga Sagalaherang',
-            'nik' => $user ? ($user->nik ?? '3213000000000000') : '3213000000000000',
-            'no_hp' => $user ? ($user->no_hp ?? '081234567890') : '081234567890',
-            'alamat' => $user ? ($user->alamat ?? 'Desa Sagalaherang') : 'Desa Sagalaherang',
+            'pengguna_id' => $user->id,
+            'nama_pelapor' => $user->nama ?? 'Warga Sagalaherang',
+            'nik' => $user->nik ?? '3213000000000000',
+            'no_hp' => $user->no_hp ?? '081234567890',
+            'alamat' => $user->alamat ?? 'Desa Sagalaherang',
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
-            'lokasi' => $request->lokasi,
+            'lokasi' => $request->lokasi ?? 'Desa Sagalaherang',
             'foto' => $fotoPath,
             'status' => 'menunggu',
         ]);

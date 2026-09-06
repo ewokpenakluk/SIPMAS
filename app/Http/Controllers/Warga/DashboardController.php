@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Warga;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,32 +20,38 @@ class DashboardController extends Controller
                 ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
         }
 
-        // Ambil nama user login atau default Budi Santoso untuk sampel tampilan
         $user = Auth::user();
-        $namaWarga = $user ? $user->nama : 'Budi Santoso';
+        $namaWarga = $user ? $user->nama : 'Masyarakat Desa';
 
-        // Sampel data ringkasan status & aktivitas terakhir
-        $stats = [
-            'diterima' => 2,
-            'diproses' => 1,
-            'selesai' => 5,
-            'ditolak' => 0,
-        ];
+        if ($user) {
+            $userComplaints = Pengaduan::where('pengguna_id', $user->id);
 
-        $aktivitasTerakhir = [
-            [
-                'judul' => 'Lampu Jalan Mati di RT 03',
-                'kategori' => 'Infrastruktur',
-                'tanggal' => '12 Okt 2023, 14:30',
-                'status' => 'diproses',
-            ],
-            [
-                'judul' => 'Saluran Air Tersumbat',
-                'kategori' => 'Lingkungan',
-                'tanggal' => '05 Okt 2023, 09:15',
-                'status' => 'selesai',
-            ],
-        ];
+            $stats = [
+                'diterima' => (clone $userComplaints)->whereIn('status', ['menunggu', 'diterima'])->count(),
+                'diproses' => (clone $userComplaints)->where('status', 'diproses')->count(),
+                'selesai' => (clone $userComplaints)->where('status', 'selesai')->count(),
+                'ditolak' => (clone $userComplaints)->where('status', 'ditolak')->count(),
+            ];
+
+            $recentList = (clone $userComplaints)->with('kategori')->orderBy('created_at', 'desc')->take(5)->get();
+
+            $aktivitasTerakhir = $recentList->map(function ($item) {
+                return [
+                    'judul' => $item->judul,
+                    'kategori' => $item->kategori->nama ?? 'Umum',
+                    'tanggal' => $item->created_at ? $item->created_at->format('d M Y, H:i') : date('d M Y, H:i'),
+                    'status' => $item->status,
+                ];
+            })->toArray();
+        } else {
+            $stats = [
+                'diterima' => 0,
+                'diproses' => 0,
+                'selesai' => 0,
+                'ditolak' => 0,
+            ];
+            $aktivitasTerakhir = [];
+        }
 
         return view('warga.dashboard', compact('namaWarga', 'stats', 'aktivitasTerakhir'));
     }

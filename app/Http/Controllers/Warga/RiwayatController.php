@@ -29,39 +29,48 @@ class RiwayatController extends Controller
 
         $user = Auth::user();
 
-        // Data sampel riwayat pengaduan warga untuk tampilan mockup
-        $sampleRiwayat = [
-            [
-                'nomor_tiket' => '#TKT-20231024-001',
-                'raw_tiket' => 'TKT-20231024-001',
-                'tanggal' => '24 Okt 2023',
-                'judul' => 'Lampu Jalan Mati di Perempatan RT 03',
-                'kategori' => 'Infrastruktur',
-                'status' => 'diproses',
-                'status_label' => 'Diproses',
-                'badge_class' => 'bg-blue-50 text-blue-700 border-blue-200/60',
-            ],
-            [
-                'nomor_tiket' => '#TKT-20231015-042',
-                'raw_tiket' => 'TKT-20231015-042',
-                'tanggal' => '15 Okt 2023',
-                'judul' => 'Penumpukan Sampah Liar di Lapangan Desa',
-                'kategori' => 'Kebersihan',
-                'status' => 'selesai',
-                'status_label' => 'Selesai',
-                'badge_class' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
-            ],
-            [
-                'nomor_tiket' => '#TKT-20231002-088',
-                'raw_tiket' => 'TKT-20231002-088',
-                'tanggal' => '02 Okt 2023',
-                'judul' => 'Permohonan Ronda Malam Tambahan',
-                'kategori' => 'Keamanan',
-                'status' => 'menunggu',
-                'status_label' => 'Menunggu',
-                'badge_class' => 'bg-amber-50 text-amber-700 border-amber-200/60',
-            ],
-        ];
+        // Query pengaduan milik user dari database
+        $query = Pengaduan::where('pengguna_id', $user->id)
+            ->with('kategori')
+            ->orderBy('created_at', 'desc');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', '%' . $search . '%')
+                  ->orWhere('nomor_tiket', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!empty($statusFilter)) {
+            $query->where('status', strtolower($statusFilter));
+        }
+
+        $pengaduanList = $query->get();
+
+        // Format data riwayat agar kompatibel dengan template view
+        $sampleRiwayat = $pengaduanList->map(function ($item) {
+            $badgeClass = match ($item->status) {
+                'diproses' => 'bg-blue-50 text-blue-700 border-blue-200/60',
+                'diterima' => 'bg-blue-50 text-blue-700 border-blue-200/60',
+                'selesai' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
+                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200/60',
+                default => 'bg-amber-50 text-amber-700 border-amber-200/60',
+            };
+
+            return [
+                'id' => $item->id,
+                'nomor_tiket' => '#' . $item->nomor_tiket,
+                'raw_tiket' => $item->nomor_tiket,
+                'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
+                'judul' => $item->judul,
+                'kategori' => $item->kategori->nama ?? 'Umum',
+                'status' => $item->status,
+                'status_label' => ucfirst($item->status),
+                'badge_class' => $badgeClass,
+                'catatan_admin' => $item->catatan_admin,
+            ];
+        })->toArray();
 
         return view('warga.riwayat', compact('sampleRiwayat', 'search', 'statusFilter'));
     }
