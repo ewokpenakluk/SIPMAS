@@ -168,6 +168,26 @@
                 <form action="{{ route('register') }}" method="POST" class="space-y-4">
                     @csrf
 
+                    <!-- DIGIT VALIDATION BUBBLE ALERT -->
+                    <div id="digit-validation-bubble" class="{{ ($errors->has('nik') || $errors->has('no_hp')) ? 'flex' : 'hidden' }} mb-5 p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-slate-800 text-xs shadow-sm items-start gap-3.5 relative overflow-hidden transition-all duration-300" {{ ($errors->has('nik') || $errors->has('no_hp')) ? 'data-has-server-error="true"' : '' }}>
+                        <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                        </div>
+                        <div class="space-y-0.5">
+                            <h4 class="font-extrabold text-amber-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                <span>Ketentuan Digit Input</span>
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block"></span>
+                            </h4>
+                            <p id="digit-bubble-text" class="text-slate-700 text-xs leading-relaxed font-medium">
+                                @if ($errors->has('nik'))
+                                    {{ $errors->first('nik') }}
+                                @elseif ($errors->has('no_hp'))
+                                    {{ $errors->first('no_hp') }}
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Nama Lengkap -->
                     <div>
                         <label for="portal_nama" class="block text-xs font-semibold text-slate-700 mb-1.5">
@@ -202,11 +222,12 @@
                                    value="{{ old('nik') }}" 
                                    maxlength="16" 
                                    required 
-                                   placeholder="Contoh: 321xxxxxxxxxxxxx" 
+                                   placeholder="Contoh: 321xxxxxxxxxxxxx (16 digit)" 
                                    class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateDigitLengthPortal();"
+                                   onblur="validateDigitLengthPortal();">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Pastikan NIK terdiri dari 16 angka.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Ketentuan: NIK harus terdiri dari 16 digit angka.</p>
                     </div>
 
                     <!-- Alamat Lengkap -->
@@ -222,10 +243,10 @@
                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all resize-none">{{ old('alamat') }}</textarea>
                     </div>
 
-                    <!-- Nomor Telepon / WhatsApp -->
+                    <!-- Nomor Telepon / WhatsApp (12 Digit) -->
                     <div>
                         <label for="portal_no_hp" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                            Nomor Telepon / WhatsApp
+                            Nomor Telepon / WhatsApp (12 Digit)
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -235,11 +256,14 @@
                                    id="portal_no_hp" 
                                    name="no_hp" 
                                    value="{{ old('no_hp') }}" 
+                                   maxlength="12" 
                                    required 
-                                   placeholder="08xxxxxxxxxx" 
+                                   placeholder="08xxxxxxxxxx (12 digit)" 
                                    class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all"
-                                   oninput="this.value = this.value.replace(/[^0-9+]/g, '')">
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateDigitLengthPortal();"
+                                   onblur="validateDigitLengthPortal();">
                         </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Ketentuan: Nomor HP/WA harus terdiri dari 12 digit angka.</p>
                     </div>
 
                     <!-- Kata Sandi -->
@@ -346,6 +370,39 @@
             passwordInput.type = 'password';
             eyeIcon.classList.remove('fa-eye-slash');
             eyeIcon.classList.add('fa-eye');
+        }
+    }
+
+    function validateDigitLengthPortal() {
+        const nikInput = document.getElementById('portal_nik');
+        const noHpInput = document.getElementById('portal_no_hp');
+        const bubble = document.getElementById('digit-validation-bubble');
+        const bubbleText = document.getElementById('digit-bubble-text');
+
+        if (!nikInput || !noHpInput || !bubble || !bubbleText) return;
+
+        const nikVal = nikInput.value.trim();
+        const noHpVal = noHpInput.value.trim();
+
+        let warnings = [];
+
+        if (nikVal.length > 0 && nikVal.length !== 16) {
+            warnings.push(`💬 NIK harus berjumlah persis <strong>16 digit angka</strong> (saat ini ${nikVal.length} digit).`);
+        }
+
+        if (noHpVal.length > 0 && noHpVal.length !== 12) {
+            warnings.push(`💬 Nomor Telepon / WhatsApp harus berjumlah persis <strong>12 digit angka</strong> (saat ini ${noHpVal.length} digit).`);
+        }
+
+        if (warnings.length > 0) {
+            bubbleText.innerHTML = warnings.join('<br>');
+            bubble.classList.remove('hidden');
+            bubble.classList.add('flex');
+        } else {
+            if (!bubble.dataset.hasServerError) {
+                bubble.classList.remove('flex');
+                bubble.classList.add('hidden');
+            }
         }
     }
 </script>

@@ -22,20 +22,29 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        // Bersihkan spasi dan karakter non-digit dari NIK dan No HP sebelum validasi
+        $nik = preg_replace('/[^0-9]/', '', $request->nik);
+        $no_hp = preg_replace('/[^0-9]/', '', $request->no_hp);
+
+        $request->merge([
+            'nik' => $nik,
+            'no_hp' => $no_hp,
+        ]);
+
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'nik' => ['required', 'string', 'size:16', 'regex:/^[0-9]+$/', 'unique:pengguna,nik'],
+            'nik' => ['required', 'string', 'digits:16', 'unique:pengguna,nik'],
             'alamat' => ['required', 'string'],
-            'no_hp' => ['required', 'string', 'max:15'],
+            'no_hp' => ['required', 'string', 'digits:12'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
             'nama.required' => 'Nama lengkap wajib diisi.',
             'nik.required' => 'NIK wajib diisi.',
-            'nik.size' => 'NIK harus terdiri dari 16 angka.',
-            'nik.regex' => 'NIK hanya boleh berisi angka.',
+            'nik.digits' => 'NIK harus berjumlah persis 16 digit angka.',
             'nik.unique' => 'NIK ini sudah terdaftar sebelumnya.',
             'alamat.required' => 'Alamat lengkap domisili wajib diisi.',
             'no_hp.required' => 'Nomor telepon / WhatsApp wajib diisi.',
+            'no_hp.digits' => 'Nomor Telepon / WhatsApp harus berjumlah persis 12 digit angka.',
             'password.required' => 'Kata sandi wajib diisi.',
             'password.min' => 'Kata sandi minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
