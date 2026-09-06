@@ -65,9 +65,26 @@
                         <i class="fa-solid fa-chevron-down text-xs"></i>
                     </div>
                 </div>
+            <!-- Field 2: Judul Pengaduan / Masalah -->
+            <div>
+                <label for="judul" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Judul Pengaduan
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-heading text-xs"></i>
+                    </div>
+                    <input type="text" 
+                           id="judul" 
+                           name="judul" 
+                           value="{{ old('judul') }}" 
+                           required 
+                           placeholder="Contoh: Jalan Berlubang di Dekat Perempatan Pasar" 
+                           class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
+                </div>
             </div>
 
-            <!-- Field 2: Deskripsi Masalah -->
+            <!-- Field 3: Deskripsi Masalah -->
             <div>
                 <label for="deskripsi" class="block text-xs font-semibold text-slate-700 mb-1.5">
                     Deskripsi Masalah
