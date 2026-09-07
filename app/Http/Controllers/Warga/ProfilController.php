@@ -13,8 +13,14 @@ class ProfilController extends Controller
      */
     public function index()
     {
+        // Proteksi: Wajib login untuk mengakses halaman profil
+        if (!Auth::check()) {
+            return redirect()->route('portal', ['tab' => 'masuk'])
+                ->with('error', 'Silakan masuk ke akun Anda terlebih dahulu untuk melihat profil.');
+        }
+
         // Proteksi: Akun Admin tidak boleh masuk ke halaman masyarakat
-        if (Auth::check() && Auth::user()->isAdmin()) {
+        if (Auth::user()->isAdmin()) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'Akun Admin tidak diizinkan mengakses halaman masyarakat. Anda telah dialihkan ke Admin Dashboard.');
         }

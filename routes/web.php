@@ -16,47 +16,14 @@ use App\Http\Controllers\Admin\PengaduanController as AdminPengaduanController;
 use App\Http\Controllers\Admin\StatistikController as AdminStatistikController;
 use Illuminate\Support\Facades\Auth;
 
+// Halaman Publik (Landing Page Desa)
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
-// Dashboard Admin Panel & Admin Login
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin', [AdminDashboardController::class, 'index']);
-
-Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AdminLoginController::class, 'login']);
-
-// Kelola Pengaduan Admin & Live Search
-Route::get('/admin/pengaduan/search/live', [AdminPengaduanController::class, 'liveSearch'])->name('admin.pengaduan.search.live');
-Route::get('/admin/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.kelola');
-Route::get('/admin/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.show');
-Route::post('/admin/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('admin.pengaduan.update');
-
-// Statistik & Rekapitulasi Data Admin
-Route::get('/admin/statistik', [AdminStatistikController::class, 'index'])->name('admin.statistik');
-
-// Dashboard Warga (User Terautentikasi / Sample Tampilan)
-Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
-
-// Profil Akun Warga
-Route::get('/profil', [WargaProfilController::class, 'index'])->name('profil');
-Route::post('/profil', [WargaProfilController::class, 'update'])->name('profil.update');
-
-// Riwayat Pengaduan Warga
-Route::get('/riwayat', [WargaRiwayatController::class, 'index'])->name('riwayat');
-
-// Form Buat Pengaduan Baru Warga
-Route::get('/pengaduan/buat', [WargaPengaduanBuatController::class, 'create'])->name('pengaduan.buat');
-Route::post('/pengaduan/buat', [WargaPengaduanBuatController::class, 'store'])->name('pengaduan.store');
-
-// Lacak Status Pengaduan
-Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
-Route::get('/lacak', [LacakStatusController::class, 'index']);
-
-// Auth Routes (Portal Login & Daftar Toggle)
+// Auth Routes (Portal Login & Daftar Warga - Khusus Tamu / Belum Login)
 Route::middleware('guest')->group(function () {
     Route::get('/portal', [PortalController::class, 'index'])->name('portal');
     
-    // Rute Login & Register mengarahkan ke portal dengan tab terintegrasi
+    // Rute Login & Register mengarahkan ke portal terpadu
     Route::get('/login', function () {
         return redirect()->route('portal', ['tab' => 'masuk']);
     })->name('login');
@@ -67,24 +34,70 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/login', [LoginController::class, 'login']);
     Route::post('/register', [RegisterController::class, 'register']);
+
+    // Login Admin
+    Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/admin/login', [AdminLoginController::class, 'login']);
 });
 
-// Logout Warga & Admin
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect()->route('beranda')->with('success', 'Anda telah berhasil keluar.');
-})->name('logout');
+// Logout Rute (Wajib Login)
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('beranda')->with('success', 'Anda telah berhasil keluar.');
+    })->name('logout');
 
-Route::post('/admin/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect()->route('admin.login')->with('success', 'Anda telah berhasil keluar dari Admin Panel.');
-})->name('admin.logout');
+    Route::post('/admin/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('admin.login')->with('success', 'Anda telah berhasil keluar dari Admin Panel.');
+    })->name('admin.logout');
+});
 
-// Placeholder routes untuk navigasi & fitur warga
+// ==========================================
+// RUTE KHUSUS MASYARAKAT / WARGA (WAJIB LOGIN)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    // Dashboard Warga
+    Route::get('/dashboard', [WargaDashboardController::class, 'index'])->name('dashboard');
+
+    // Profil Akun Warga
+    Route::get('/profil', [WargaProfilController::class, 'index'])->name('profil');
+    Route::post('/profil', [WargaProfilController::class, 'update'])->name('profil.update');
+
+    // Riwayat Pengaduan Warga
+    Route::get('/riwayat', [WargaRiwayatController::class, 'index'])->name('riwayat');
+
+    // Form Buat Pengaduan Baru Warga
+    Route::get('/pengaduan/buat', [WargaPengaduanBuatController::class, 'create'])->name('pengaduan.buat');
+    Route::post('/pengaduan/buat', [WargaPengaduanBuatController::class, 'store'])->name('pengaduan.store');
+
+    // Lacak Status Pengaduan Warga
+    Route::get('/pengaduan/lacak', [LacakStatusController::class, 'index'])->name('pengaduan.lacak');
+    Route::get('/lacak', [LacakStatusController::class, 'index']);
+});
+
+// ==========================================
+// RUTE KHUSUS ADMIN PANEL (WAJIB LOGIN ADMIN)
+// ==========================================
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [AdminDashboardController::class, 'index']);
+
+    // Kelola Pengaduan Admin & Live Search
+    Route::get('/pengaduan/search/live', [AdminPengaduanController::class, 'liveSearch'])->name('pengaduan.search.live');
+    Route::get('/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('pengaduan.kelola');
+    Route::get('/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('pengaduan.show');
+    Route::post('/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('pengaduan.update');
+
+    // Statistik & Rekapitulasi Data Admin
+    Route::get('/statistik', [AdminStatistikController::class, 'index'])->name('statistik');
+});
+
+// Placeholder routes informasi publik
 Route::get('/kontak', function () {
     return view('beranda');
 })->name('kontak');
