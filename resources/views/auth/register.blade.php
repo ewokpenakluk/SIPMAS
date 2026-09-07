@@ -84,7 +84,7 @@
             </div>
 
             <!-- FORM REGISTRASI -->
-            <form action="{{ route('register') }}" method="POST" class="space-y-4">
+            <form action="{{ route('register') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
 
                 <!-- Field 1: Nama Lengkap -->
@@ -101,7 +101,8 @@
                                name="nama" 
                                value="{{ old('nama') }}" 
                                required 
-                               placeholder="Masukkan nama lengkap" 
+                               autocomplete="off"
+                               placeholder="Masukkan nama lengkap Anda" 
                                class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                     </div>
                 </div>
@@ -121,7 +122,8 @@
                                value="{{ old('nik') }}" 
                                maxlength="16" 
                                required 
-                               placeholder="Contoh: 321xxxxxxxxxxxxx (16 digit)" 
+                               autocomplete="off"
+                               placeholder="Masukkan 16 digit NIK Anda" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all"
                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateDigitLength();"
                                onblur="validateDigitLength();">
@@ -141,7 +143,7 @@
                               name="alamat" 
                               rows="3" 
                               required 
-                              placeholder="Masukkan alamat domisili saat ini" 
+                              placeholder="Masukkan alamat domisili (nama jalan / RT / RW / Dusun)" 
                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all resize-none">{{ old('alamat') }}</textarea>
                 </div>
 
@@ -160,7 +162,8 @@
                                value="{{ old('no_hp') }}" 
                                maxlength="12" 
                                required 
-                               placeholder="08xxxxxxxxxx (12 digit)" 
+                               autocomplete="off"
+                               placeholder="Contoh: 081234567890 (12 digit)" 
                                class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all"
                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateDigitLength();"
                                onblur="validateDigitLength();">
@@ -181,7 +184,8 @@
                                id="password" 
                                name="password" 
                                required 
-                               placeholder="Minimal 8 karakter" 
+                               autocomplete="new-password"
+                               placeholder="Buat kata sandi baru (minimal 8 karakter)" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 
                                 onclick="togglePasswordVisibility('password', 'eye-icon-1')" 
@@ -204,7 +208,8 @@
                                id="password_confirmation" 
                                name="password_confirmation" 
                                required 
-                               placeholder="Ulangi kata sandi" 
+                               autocomplete="new-password"
+                               placeholder="Ulangi kata sandi yang telah dibuat" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 
                                 onclick="togglePasswordVisibility('password_confirmation', 'eye-icon-2')" 

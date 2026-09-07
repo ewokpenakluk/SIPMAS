@@ -41,20 +41,21 @@
             @endif
 
             <!-- FORM LOGIN -->
-            <form action="{{ route('login') }}" method="POST" class="space-y-4">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
 
-                <!-- Field 1: NIK / Username -->
+                <!-- Field 1: NIK / No WhatsApp -->
                 <div>
                     <label for="login_identifier" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                        NIK / Username
+                        NIK / No. WhatsApp
                     </label>
                     <input type="text" 
                            id="login_identifier" 
                            name="login_identifier" 
                            value="{{ old('login_identifier') }}" 
                            required 
-                           placeholder="Masukkan NIK atau Username" 
+                           autocomplete="off"
+                           placeholder="Masukkan NIK atau nomor WhatsApp Anda" 
                            class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                 </div>
 
@@ -73,7 +74,8 @@
                                id="password" 
                                name="password" 
                                required 
-                               placeholder="Masukkan Kata Sandi" 
+                               autocomplete="new-password"
+                               placeholder="Masukkan kata sandi akun Anda" 
                                class="w-full pl-3.5 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 
                                 onclick="togglePasswordVisibility()" 

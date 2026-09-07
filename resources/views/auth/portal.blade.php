@@ -93,13 +93,13 @@
                     </p>
                 </div>
 
-                <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                <form action="{{ route('login') }}" method="POST" class="space-y-4" autocomplete="off">
                     @csrf
 
-                    <!-- NIK / Username -->
+                    <!-- NIK / No HP -->
                     <div>
                         <label for="portal_login_identifier" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                            NIK / Username
+                            NIK / No. WhatsApp
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -110,7 +110,8 @@
                                    name="login_identifier" 
                                    value="{{ old('login_identifier') }}" 
                                    required 
-                                   placeholder="Masukkan 16 digit NIK" 
+                                   autocomplete="off"
+                                   placeholder="Masukkan NIK atau nomor WhatsApp Anda" 
                                    class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         </div>
                     </div>
@@ -133,7 +134,8 @@
                                    id="portal_password" 
                                    name="password" 
                                    required 
-                                   placeholder="Masukkan password Anda" 
+                                   autocomplete="new-password"
+                                   placeholder="Masukkan kata sandi akun Anda" 
                                    class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                             <button type="button" 
                                     onclick="togglePasswordVisibility('portal_password', 'portal-eye-icon')" 
