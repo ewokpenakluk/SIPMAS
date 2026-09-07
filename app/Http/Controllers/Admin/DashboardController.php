@@ -45,33 +45,10 @@ class DashboardController extends Controller
             ['hari' => 'Min', 'nilai' => 15],
         ];
 
-        // Ambil pengaduan terbaru dari database yang memerlukan verifikasi
-        $latestPengaduan = Pengaduan::with('kategori')
+        // Ambil pengaduan terbaru dari database dengan pagination (5 item per halaman)
+        $perluVerifikasi = Pengaduan::with('kategori')
             ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        $perluVerifikasi = $latestPengaduan->map(function ($item) {
-            $badgeClass = match ($item->status) {
-                'diproses' => 'bg-blue-50 text-blue-700 border-blue-100',
-                'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-100',
-                default => 'bg-amber-50 text-amber-700 border-amber-100',
-            };
-
-            return [
-                'id' => $item->id,
-                'nomor_tiket' => $item->nomor_tiket,
-                'tiket' => $item->nomor_tiket,
-                'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
-                'nama_pelapor' => $item->nama_pelapor,
-                'nama_warga' => $item->nama_pelapor,
-                'kategori' => $item->kategori->nama ?? 'Umum',
-                'judul' => $item->judul,
-                'status' => strtoupper($item->status),
-                'badge_class' => $badgeClass,
-            ];
-        })->toArray();
+            ->paginate(5);
 
         return view('admin.dashboard', compact('adminUser', 'metrics', 'trenMingguan', 'perluVerifikasi'));
     }

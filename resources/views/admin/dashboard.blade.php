@@ -245,51 +245,120 @@
                 <!-- KOLOM KANAN: PENGADUAN TERBARU PERLU VERIFIKASI -->
                 <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
                     
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-base font-bold text-slate-900">
-                            Pengaduan Terbaru Perlu Verifikasi
-                        </h3>
-                        <a href="#" class="text-xs font-semibold text-[#06612B] hover:underline">
-                            Lihat Semua
-                        </a>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">
+                                    Pengaduan Terbaru Perlu Verifikasi
+                                </h3>
+                                <p class="text-[11px] text-slate-400 font-medium">Maksimal 5 pengaduan per halaman</p>
+                            </div>
+                            <a href="{{ route('admin.pengaduan.kelola') }}" class="text-xs font-semibold text-[#06612B] hover:underline flex items-center gap-1">
+                                <span>Lihat Semua</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </a>
+                        </div>
+
+                        <!-- TABEL PENGADUAN -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-[10px] font-bold text-slate-400 uppercase border-b border-slate-100 pb-3">
+                                        <th class="py-2.5 px-3">Tanggal</th>
+                                        <th class="py-2.5 px-3">Nama Warga</th>
+                                        <th class="py-2.5 px-3">Kategori</th>
+                                        <th class="py-2.5 px-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs">
+                                    @forelse ($perluVerifikasi as $item)
+                                        @php
+                                            $badgeClass = match ($item->status) {
+                                                'diproses', 'diterima' => 'bg-blue-50 text-blue-700 border-blue-100',
+                                                'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                                default => 'bg-amber-50 text-amber-700 border-amber-100',
+                                            };
+                                        @endphp
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="py-3.5 px-3 text-slate-600 font-normal whitespace-nowrap">
+                                                {{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}
+                                            </td>
+                                            <td class="py-3.5 px-3 font-bold text-slate-900 whitespace-nowrap">
+                                                {{ $item->nama_pelapor }}
+                                            </td>
+                                            <td class="py-3.5 px-3 whitespace-nowrap">
+                                                <span class="{{ $badgeClass }} font-semibold text-[10px] px-2.5 py-0.5 rounded-full inline-block border">
+                                                    {{ $item->kategori->nama ?? 'Umum' }}
+                                                </span>
+                                            </td>
+                                            <td class="py-3.5 px-3 text-right whitespace-nowrap">
+                                                <a href="{{ route('admin.pengaduan.show', ['id' => $item->id]) }}" 
+                                                   class="bg-[#80EE82] hover:bg-[#6ed970] text-[#06612B] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all inline-block shadow-xs">
+                                                    Lihat Detail
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="py-8 text-center text-slate-400 text-xs">
+                                                <i class="fa-regular fa-folder-open text-2xl mb-1 block text-slate-300"></i>
+                                                Belum ada pengaduan yang perlu diverifikasi.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <!-- TABEL PENGADUAN -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="text-[10px] font-bold text-slate-400 uppercase border-b border-slate-100 pb-3">
-                                    <th class="py-2.5 px-3">Tanggal</th>
-                                    <th class="py-2.5 px-3">Nama Warga</th>
-                                    <th class="py-2.5 px-3">Kategori</th>
-                                    <th class="py-2.5 px-3 text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-xs">
-                                @foreach ($perluVerifikasi as $item)
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="py-3.5 px-3 text-slate-600 font-normal whitespace-nowrap">
-                                            {{ $item['tanggal'] ?? '-' }}
-                                        </td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-900 whitespace-nowrap">
-                                            {{ $item['nama_warga'] ?? ($item['nama_pelapor'] ?? 'Warga') }}
-                                        </td>
-                                        <td class="py-3.5 px-3 whitespace-nowrap">
-                                            <span class="{{ $item['badge_class'] ?? 'bg-emerald-50 text-emerald-700 border-emerald-100' }} font-semibold text-[10px] px-2.5 py-0.5 rounded-full inline-block border">
-                                                {{ $item['kategori'] ?? 'Umum' }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3.5 px-3 text-right whitespace-nowrap">
-                                            <a href="{{ route('admin.pengaduan.kelola') }}" 
-                                               class="bg-[#80EE82] hover:bg-[#6ed970] text-[#06612B] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all inline-block shadow-xs">
-                                                Lihat Detail
-                                            </a>
-                                        </td>
-                                    </tr>
+                    <!-- PAGINATION KONTROL -->
+                    @if ($perluVerifikasi->hasPages())
+                        <div class="pt-4 mt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                            <div class="text-slate-500 text-[11px]">
+                                Menampilkan <span class="font-bold text-slate-700">{{ $perluVerifikasi->firstItem() }}</span> - <span class="font-bold text-slate-700">{{ $perluVerifikasi->lastItem() }}</span> dari <span class="font-bold text-slate-700">{{ $perluVerifikasi->total() }}</span> pengaduan
+                            </div>
+                            
+                            <div class="flex items-center gap-1">
+                                {{-- Tombol Sebelumnya --}}
+                                @if ($perluVerifikasi->onFirstPage())
+                                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-300 text-xs font-semibold cursor-not-allowed">
+                                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                    </span>
+                                @else
+                                    <a href="{{ $perluVerifikasi->previousPageUrl() }}" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#06612B] text-xs font-semibold transition-all">
+                                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                    </a>
+                                @endif
+
+                                {{-- Nomor Halaman --}}
+                                @foreach ($perluVerifikasi->getUrlRange(1, $perluVerifikasi->lastPage()) as $page => $url)
+                                    @if ($page == $perluVerifikasi->currentPage())
+                                        <span class="px-2.5 py-1 rounded-lg bg-[#06612B] text-white text-xs font-bold shadow-xs">
+                                            {{ $page }}
+                                        </span>
+                                    @elseif ($page == 1 || $page == $perluVerifikasi->lastPage() || abs($page - $perluVerifikasi->currentPage()) <= 1)
+                                        <a href="{{ $url }}" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#06612B] text-xs font-semibold transition-all">
+                                            {{ $page }}
+                                        </a>
+                                    @elseif (abs($page - $perluVerifikasi->currentPage()) == 2)
+                                        <span class="px-1 text-slate-400 text-xs">...</span>
+                                    @endif
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+
+                                {{-- Tombol Selanjutnya --}}
+                                @if ($perluVerifikasi->hasMorePages())
+                                    <a href="{{ $perluVerifikasi->nextPageUrl() }}" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#06612B] text-xs font-semibold transition-all">
+                                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                    </a>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-300 text-xs font-semibold cursor-not-allowed">
+                                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
                 </div>
 
