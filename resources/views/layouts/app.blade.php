@@ -60,8 +60,14 @@
     <header class="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
+            @php
+                $brandLink = route('beranda');
+                if (Auth::check()) {
+                    $brandLink = Auth::user()->isAdmin() ? route('admin.dashboard') : route('dashboard');
+                }
+            @endphp
             <!-- Logo & Brand Name -->
-            <a href="{{ route('beranda') }}" class="flex items-center gap-3 group">
+            <a href="{{ $brandLink }}" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center text-white font-bold shadow-sm shadow-brand-dark/20 group-hover:scale-105 transition-transform duration-200">
                     <svg class="w-6 h-6 fill-current text-brand-light" viewBox="0 0 24 24">
                         <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
