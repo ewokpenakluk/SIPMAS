@@ -101,14 +101,10 @@
                 </a>
             </nav>
 
-            <!-- Right Actions: Bell Notification & User Profile Avatar -->
-            <div class="flex items-center gap-5">
-                <button type="button" class="text-slate-500 hover:text-brand-dark transition-colors p-2 rounded-full hover:bg-slate-100 relative" title="Notifikasi">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-                </button>
+            <!-- Right Actions: User Profile Avatar -->
+            <div class="flex items-center gap-4">
                 <a href="{{ route('profil') }}" class="flex items-center gap-2 group">
-                    <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center group-hover:border-brand-dark transition-colors">
+                    <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center group-hover:border-brand-dark transition-colors shadow-2xs">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" alt="User Profile" class="w-full h-full object-cover">
                     </div>
                 </a>

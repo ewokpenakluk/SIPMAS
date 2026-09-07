@@ -99,7 +99,7 @@
                     <!-- NIK / No HP -->
                     <div>
                         <label for="portal_login_identifier" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                            NIK / No. WhatsApp
+                            NIK
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -111,7 +111,7 @@
                                    value="{{ old('login_identifier') }}" 
                                    required 
                                    autocomplete="off"
-                                   placeholder="Masukkan NIK atau nomor WhatsApp Anda" 
+                                   placeholder="Masukkan NIK" 
                                    class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         </div>
                     </div>
