@@ -167,7 +167,7 @@
                            onchange="previewFileName(this)">
                 </div>
 
-                <div id="file-name-preview" class="mt-2 text-xs font-semibold text-[#06612B] hidden flex items-center gap-1.5">
+                <div id="file-name-preview" class="mt-2 text-xs font-semibold text-[#06612B] hidden items-center gap-1.5">
                     <i class="fa-regular fa-image"></i>
                     <span id="file-name-text"></span>
                 </div>
@@ -203,8 +203,10 @@
         if (input.files && input.files[0]) {
             previewText.textContent = input.files[0].name;
             previewBox.classList.remove('hidden');
+            previewBox.classList.add('flex');
         } else {
             previewBox.classList.add('hidden');
+            previewBox.classList.remove('flex');
         }
     }
 </script>

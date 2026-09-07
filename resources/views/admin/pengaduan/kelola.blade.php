@@ -54,7 +54,7 @@
 </head>
 <body class="min-h-screen bg-[#F8FAF8] text-slate-800 antialiased p-4 sm:p-6">
 
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="max-w-350 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- SIDEBAR KIRI: ADMIN PANEL -->
         <aside class="lg:col-span-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-between min-h-[calc(100vh-48px)]">
@@ -204,17 +204,25 @@
                         <span class="text-xs font-bold text-slate-800 mb-2 block">
                             Bukti Foto
                         </span>
-                        <div class="bg-slate-50 rounded-xl border border-slate-100 overflow-hidden flex items-center justify-center p-3">
-                            <div class="w-full max-h-60 rounded-xl overflow-hidden bg-white border border-slate-200 flex items-center justify-center p-6">
-                                <div class="text-center py-4">
-                                    <div class="w-20 h-20 rounded-2xl bg-[#06612B] text-[#80EE82] flex items-center justify-center mx-auto mb-2 shadow-md">
-                                        <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24">
-                                            <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                                        </svg>
+                        <div class="bg-slate-50 rounded-xl border border-slate-100 overflow-hidden p-3">
+                            @if (!empty($laporan['bukti_foto']))
+                                <a href="{{ $laporan['bukti_foto'] }}" target="_blank" title="Klik untuk memperbesar gambar" class="block group relative w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+                                    <img src="{{ $laporan['bukti_foto'] }}" 
+                                         alt="Bukti Foto Pengaduan" 
+                                         class="w-full max-h-72 object-contain mx-auto group-hover:scale-[1.02] transition-transform duration-200">
+                                    <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                        <span class="bg-slate-900/80 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                                            <i class="fa-solid fa-up-right-and-down-left-from-center text-[10px]"></i>
+                                            <span>Lihat Ukuran Penuh</span>
+                                        </span>
                                     </div>
-                                    <span class="text-xs font-bold text-[#06612B] block">Desa Sagalaherang</span>
+                                </a>
+                            @else
+                                <div class="w-full py-8 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
+                                    <i class="fa-regular fa-image text-3xl mb-1 block"></i>
+                                    <span class="text-xs font-medium">Tidak ada foto bukti yang dilampirkan</span>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
 

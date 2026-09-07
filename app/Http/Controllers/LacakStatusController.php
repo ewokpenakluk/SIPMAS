@@ -66,6 +66,7 @@ class LacakStatusController extends Controller
                 'judul' => $pengaduanModel->judul,
                 'dilaporkan_lalu' => 'Dilaporkan ' . ($pengaduanModel->created_at ? $pengaduanModel->created_at->diffForHumans() : 'baru saja'),
                 'deskripsi' => $pengaduanModel->deskripsi,
+                'foto' => $pengaduanModel->foto ? asset('storage/' . $pengaduanModel->foto) : null,
                 'tanggapan_admin' => $tanggapanPesan,
                 'tanggapan_waktu' => $tanggapanWaktu,
                 'timeline' => $timeline,
@@ -78,6 +79,7 @@ class LacakStatusController extends Controller
                 'judul' => 'Jalan Berlubang di Dusun Krajan',
                 'dilaporkan_lalu' => 'Dilaporkan 2 hari lalu',
                 'deskripsi' => 'Terdapat jalan berlubang yang cukup dalam di pertigaan dekat balai desa. Sangat membahayakan pengendara motor terutama saat malam hari.',
+                'foto' => null,
                 'tanggapan_admin' => 'Terima kasih atas laporannya. Saat ini sedang dalam pengecekan lapangan oleh tim infrastruktur desa.',
                 'tanggapan_waktu' => 'Dibalas pada: 24 Okt 2023, 10:30 WIB',
                 'timeline' => [

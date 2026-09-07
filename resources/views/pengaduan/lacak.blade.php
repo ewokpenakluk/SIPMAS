@@ -77,6 +77,28 @@
                 </p>
             </div>
 
+            @if (!empty($sampleData['foto']))
+            <!-- Foto Bukti Laporan -->
+            <div>
+                <h3 class="text-xs font-bold text-slate-800 mb-1.5">
+                    Bukti Foto
+                </h3>
+                <div class="rounded-xl overflow-hidden border border-slate-100 bg-slate-50 p-2">
+                    <a href="{{ $sampleData['foto'] }}" target="_blank" class="block group relative rounded-lg overflow-hidden border border-slate-200 bg-white">
+                        <img src="{{ $sampleData['foto'] }}" 
+                             alt="Bukti Foto Pengaduan" 
+                             class="w-full max-h-64 object-contain mx-auto group-hover:scale-[1.02] transition-transform duration-200">
+                        <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <span class="bg-slate-900/80 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-up-right-and-down-left-from-center text-[10px]"></i>
+                                <span>Lihat Ukuran Penuh</span>
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <!-- Tanggapan Admin Box -->
             <div class="bg-slate-50 border-l-4 border-[#06612B] rounded-r-xl p-4 sm:p-4.5 space-y-1.5">
                 <div class="flex items-center gap-2 text-xs font-bold text-[#06612B]">
