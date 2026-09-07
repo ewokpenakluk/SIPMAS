@@ -151,6 +151,47 @@
                 </div>
             @endif
 
+            <!-- LIVE SEARCH BAR TIKET PENGADUAN -->
+            <div class="relative z-30" id="liveSearchContainer">
+                <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xs focus-within:ring-2 focus-within:ring-[#06612B]/20 focus-within:border-[#06612B] transition-all">
+                    <div class="flex items-center px-4 py-3 gap-3">
+                        <div class="text-[#06612B] flex items-center justify-center">
+                            <i id="searchIcon" class="fa-solid fa-magnifying-glass text-sm"></i>
+                            <i id="searchSpinner" class="fa-solid fa-circle-notch fa-spin text-sm hidden text-emerald-600"></i>
+                        </div>
+                        <input type="text" 
+                               id="liveSearchInput" 
+                               autocomplete="off"
+                               placeholder="Cari tiket pengaduan (contoh: ADU-2026..., nama warga, atau judul masalah)..." 
+                               class="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none font-medium">
+                        
+                        <button type="button" 
+                                id="clearSearchBtn" 
+                                class="hidden text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-all text-xs"
+                                title="Bersihkan pencarian">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+
+                        <div class="hidden sm:flex items-center gap-1.5 pl-3 border-l border-slate-200 text-[10px] text-slate-400 font-semibold uppercase">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Live Search</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING DROPDOWN HASIL PENCARIAN -->
+                <div id="searchResultsDropdown" 
+                     class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-50 transition-all divide-y divide-slate-100">
+                    <div class="p-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                        <span id="resultsCount">Hasil Pencarian</span>
+                        <span class="text-[10px] text-slate-400">Klik untuk langsung membuka laporan</span>
+                    </div>
+                    <div id="searchResultsList" class="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                        <!-- Item hasil pencarian akan dirender melalui JavaScript -->
+                    </div>
+                </div>
+            </div>
+
             <!-- GRID 2 KOLOM: DETAIL PENGADUAN & TINDAKAN ADMIN -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                 
@@ -343,6 +384,135 @@
         </main>
 
     </div>
+
+    <!-- SCRIPT LIVE SEARCH PENGADUAN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('liveSearchInput');
+            const searchIcon = document.getElementById('searchIcon');
+            const searchSpinner = document.getElementById('searchSpinner');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const dropdown = document.getElementById('searchResultsDropdown');
+            const resultsList = document.getElementById('searchResultsList');
+            const resultsCount = document.getElementById('resultsCount');
+
+            let debounceTimer = null;
+
+            function showLoading(isLoading) {
+                if (isLoading) {
+                    searchIcon.classList.add('hidden');
+                    searchSpinner.classList.remove('hidden');
+                } else {
+                    searchIcon.classList.remove('hidden');
+                    searchSpinner.classList.add('hidden');
+                }
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                if (query.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                    dropdown.classList.add('hidden');
+                    return;
+                }
+
+                clearTimeout(debounceTimer);
+                showLoading(true);
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`{{ route('admin.pengaduan.search.live') }}?q=${encodeURIComponent(query)}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        showLoading(false);
+                        renderResults(data, query);
+                    })
+                    .catch(err => {
+                        showLoading(false);
+                        console.error('Live search error:', err);
+                    });
+                }, 200);
+            });
+
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearBtn.classList.add('hidden');
+                dropdown.classList.add('hidden');
+                searchInput.focus();
+            });
+
+            function renderResults(items, query) {
+                resultsList.innerHTML = '';
+
+                if (!items || items.length === 0) {
+                    resultsCount.textContent = 'Tidak ada hasil';
+                    resultsList.innerHTML = `
+                        <div class="py-8 px-4 text-center text-slate-400">
+                            <i class="fa-regular fa-folder-open text-2xl mb-1.5 block text-slate-300"></i>
+                            <p class="text-xs font-semibold text-slate-700">Tiket tidak ditemukan</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Tidak ada pengaduan dengan kata kunci "<b>${escapeHtml(query)}</b>"</p>
+                        </div>
+                    `;
+                    dropdown.classList.remove('hidden');
+                    return;
+                }
+
+                resultsCount.textContent = `Ditemukan ${items.length} Pengaduan`;
+
+                items.forEach(item => {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.className = 'block p-3.5 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3 group';
+
+                    a.innerHTML = `
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#06612B] flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#06612B] group-hover:text-white transition-colors">
+                                <i class="fa-solid fa-file-invoice text-xs"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-xs text-slate-900 group-hover:text-[#06612B] transition-colors">${escapeHtml(item.nomor_tiket)}</span>
+                                    <span class="${item.badge_class} font-bold text-[9px] uppercase px-2 py-0.5 rounded-full border">${escapeHtml(item.status)}</span>
+                                    <span class="text-[10px] text-slate-400 font-medium">${escapeHtml(item.tanggal)}</span>
+                                </div>
+                                <h4 class="text-xs font-semibold text-slate-700 truncate mt-0.5">${escapeHtml(item.judul || 'Pengaduan Warga')}</h4>
+                                <p class="text-[11px] text-slate-400 truncate">Pelapor: <span class="text-slate-600 font-medium">${escapeHtml(item.nama_pelapor)}</span> • Kategori: <span class="text-slate-600">${escapeHtml(item.kategori)}</span></p>
+                            </div>
+                        </div>
+                        <div class="shrink-0 text-slate-300 group-hover:text-[#06612B] group-hover:translate-x-0.5 transition-all">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </div>
+                    `;
+
+                    resultsList.appendChild(a);
+                });
+
+                dropdown.classList.remove('hidden');
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Tutup dropdown saat klik di luar container
+            document.addEventListener('click', (e) => {
+                const container = document.getElementById('liveSearchContainer');
+                if (container && !container.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

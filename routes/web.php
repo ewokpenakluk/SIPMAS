@@ -25,7 +25,8 @@ Route::get('/admin', [AdminDashboardController::class, 'index']);
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 
-// Kelola Pengaduan Admin
+// Kelola Pengaduan Admin & Live Search
+Route::get('/admin/pengaduan/search/live', [AdminPengaduanController::class, 'liveSearch'])->name('admin.pengaduan.search.live');
 Route::get('/admin/pengaduan/kelola', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.kelola');
 Route::get('/admin/pengaduan/{id}', [AdminPengaduanController::class, 'show'])->name('admin.pengaduan.show');
 Route::post('/admin/pengaduan/{id}/update', [AdminPengaduanController::class, 'updateStatus'])->name('admin.pengaduan.update');

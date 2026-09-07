@@ -136,4 +136,54 @@ class PengaduanController extends Controller
 
         return redirect()->back()->with('success', 'Status pengaduan #' . $pengaduan->nomor_tiket . ' dan tanggapan admin berhasil diperbarui!');
     }
+
+    /**
+     * Live search pengaduan berdasarkan tiket, nama pelapor, atau judul untuk Admin Panel.
+     */
+    public function liveSearch(Request $request)
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $query = trim($request->get('q', ''));
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        // Hilangkan simbol # jika ada di awal nomor tiket
+        $cleanQuery = ltrim($query, '#');
+
+        $results = Pengaduan::with('kategori')
+            ->where(function ($q) use ($cleanQuery, $query) {
+                $q->where('nomor_tiket', 'LIKE', "%{$cleanQuery}%")
+                  ->orWhere('nama_pelapor', 'LIKE', "%{$query}%")
+                  ->orWhere('judul', 'LIKE', "%{$query}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get()
+            ->map(function ($item) {
+                $badgeBg = match ($item->status) {
+                    'diproses', 'diterima' => 'bg-blue-50 text-blue-700 border-blue-100',
+                    'selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                    'ditolak' => 'bg-rose-50 text-rose-700 border-rose-100',
+                    default => 'bg-amber-50 text-amber-700 border-amber-100',
+                };
+
+                return [
+                    'id' => $item->id,
+                    'nomor_tiket' => '#' . $item->nomor_tiket,
+                    'nama_pelapor' => $item->nama_pelapor,
+                    'judul' => $item->judul,
+                    'kategori' => $item->kategori->nama ?? 'Umum',
+                    'status' => ucfirst($item->status),
+                    'badge_class' => $badgeBg,
+                    'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : '-',
+                    'url' => route('admin.pengaduan.show', ['id' => $item->id]),
+                ];
+            });
+
+        return response()->json($results);
+    }
 }
