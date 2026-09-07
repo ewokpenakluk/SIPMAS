@@ -52,8 +52,8 @@
                 <span class="bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-100">
                     {{ $sampleData['kategori'] }}
                 </span>
-                <span class="bg-slate-100 text-slate-600 font-semibold text-[11px] px-3.5 py-1 rounded-full">
-                    {{ ucfirst($sampleData['status']) }}
+                <span class="{{ $sampleData['badge_class'] ?? 'bg-slate-100 text-slate-700' }} font-bold text-[11px] px-3.5 py-1 rounded-full border">
+                    {{ $sampleData['status_label'] ?? ucfirst($sampleData['status']) }}
                 </span>
             </div>
 
@@ -100,16 +100,24 @@
             @endif
 
             <!-- Tanggapan Admin Box -->
-            <div class="bg-slate-50 border-l-4 border-[#06612B] rounded-r-xl p-4 sm:p-4.5 space-y-1.5">
-                <div class="flex items-center gap-2 text-xs font-bold text-[#06612B]">
-                    <i class="fa-solid fa-rotate-left text-xs"></i>
-                    <span>Tanggapan Admin</span>
+            <div class="bg-emerald-50/40 border-l-4 border-[#06612B] rounded-r-xl p-4 sm:p-5 space-y-2 border border-slate-100 shadow-2xs">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-2 text-xs font-bold text-[#06612B]">
+                        <i class="fa-solid fa-comments text-xs"></i>
+                        <span>Tanggapan / Catatan Resmi Admin</span>
+                    </div>
+                    @if (!empty($sampleData['admin_nama']))
+                        <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            {{ $sampleData['admin_nama'] }}
+                        </span>
+                    @endif
                 </div>
-                <p class="text-xs text-slate-700 leading-relaxed font-medium">
+                <div class="bg-white rounded-xl p-3.5 border border-slate-100 text-xs text-slate-700 leading-relaxed font-medium shadow-2xs">
                     {{ $sampleData['tanggapan_admin'] }}
-                </p>
-                <div class="text-[11px] text-slate-400 font-normal pt-0.5">
-                    {{ $sampleData['tanggapan_waktu'] }}
+                </div>
+                <div class="text-[11px] text-slate-400 font-normal pt-0.5 flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-[10px]"></i>
+                    <span>{{ $sampleData['tanggapan_waktu'] }}</span>
                 </div>
             </div>
 
@@ -124,69 +132,56 @@
 
             <!-- Timeline Step Container -->
             <div class="space-y-0 pl-1">
-                
-                <!-- Step 1: Diajukan (Completed) -->
-                <div class="relative flex items-start gap-4 pb-8">
-                    <!-- Vertical Line Connector -->
-                    <div class="absolute left-3 top-6 bottom-0 w-0.5 bg-emerald-600"></div>
-                    
-                    <!-- Icon -->
-                    <div class="relative z-10 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
-                        <i class="fa-solid fa-check"></i>
+                @foreach ($sampleData['timeline'] as $step)
+                    <div class="relative flex items-start gap-4 {{ $loop->last ? '' : 'pb-8' }}">
+                        {{-- Garis Penghubung Vertikal --}}
+                        @if (!$loop->last)
+                            <div class="absolute left-3 top-6 bottom-0 w-0.5 {{ $step['state'] === 'completed' ? 'bg-emerald-600' : ($step['state'] === 'rejected' ? 'bg-rose-400' : 'bg-slate-200') }}"></div>
+                        @endif
+
+                        {{-- Icon Sesuai State --}}
+                        @if ($step['state'] === 'completed')
+                            <div class="relative z-10 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div class="pt-0.5">
+                                <h4 class="text-xs font-bold text-slate-900">{{ $step['label'] }}</h4>
+                                <p class="text-[11px] text-slate-500 font-normal mt-0.5">{{ $step['detail'] }}</p>
+                                @if (!empty($step['waktu']))
+                                    <span class="text-[10px] text-slate-400 font-medium block mt-1">{{ $step['waktu'] }}</span>
+                                @endif
+                            </div>
+                        @elseif ($step['state'] === 'active')
+                            <div class="relative z-10 w-6 h-6 rounded-full border-2 border-emerald-600 bg-white flex items-center justify-center shadow-xs">
+                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></div>
+                            </div>
+                            <div class="pt-0.5">
+                                <h4 class="text-xs font-bold text-emerald-700">{{ $step['label'] }}</h4>
+                                <p class="text-[11px] text-slate-600 font-medium mt-0.5">{{ $step['detail'] }}</p>
+                                @if (!empty($step['waktu']))
+                                    <span class="text-[10px] text-emerald-600 font-semibold block mt-1">{{ $step['waktu'] }}</span>
+                                @endif
+                            </div>
+                        @elseif ($step['state'] === 'rejected')
+                            <div class="relative z-10 w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                            <div class="pt-0.5">
+                                <h4 class="text-xs font-bold text-rose-700">{{ $step['label'] }}</h4>
+                                <p class="text-[11px] text-rose-600 font-medium mt-0.5">{{ $step['detail'] }}</p>
+                                @if (!empty($step['waktu']))
+                                    <span class="text-[10px] text-rose-400 font-medium block mt-1">{{ $step['waktu'] }}</span>
+                                @endif
+                            </div>
+                        @else
+                            <div class="relative z-10 w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center"></div>
+                            <div class="pt-0.5">
+                                <h4 class="text-xs font-semibold text-slate-400">{{ $step['label'] }}</h4>
+                                <p class="text-[11px] text-slate-300 font-normal mt-0.5">{{ $step['detail'] }}</p>
+                            </div>
+                        @endif
                     </div>
-
-                    <!-- Content -->
-                    <div class="pt-0.5">
-                        <h4 class="text-xs font-bold text-slate-900">Diajukan</h4>
-                        <p class="text-[11px] text-slate-500 font-normal mt-0.5">Laporan diterima sistem.</p>
-                        <span class="text-[10px] text-slate-400 font-medium block mt-1">22 Okt 2023, 08:15 WIB</span>
-                    </div>
-                </div>
-
-                <!-- Step 2: Diverifikasi (Active) -->
-                <div class="relative flex items-start gap-4 pb-8">
-                    <!-- Vertical Line Connector -->
-                    <div class="absolute left-3 top-6 bottom-0 w-0.5 bg-slate-200"></div>
-
-                    <!-- Icon Ring -->
-                    <div class="relative z-10 w-6 h-6 rounded-full border-2 border-emerald-600 bg-white flex items-center justify-center">
-                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-600"></div>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="pt-0.5">
-                        <h4 class="text-xs font-bold text-emerald-700">Diverifikasi</h4>
-                        <p class="text-[11px] text-slate-600 font-medium mt-0.5">Laporan sedang dicek oleh admin.</p>
-                    </div>
-                </div>
-
-                <!-- Step 3: Diproses (Pending) -->
-                <div class="relative flex items-start gap-4 pb-8">
-                    <!-- Vertical Line Connector -->
-                    <div class="absolute left-3 top-6 bottom-0 w-0.5 bg-slate-200"></div>
-
-                    <!-- Icon Gray Circle -->
-                    <div class="relative z-10 w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center"></div>
-
-                    <!-- Content -->
-                    <div class="pt-0.5">
-                        <h4 class="text-xs font-semibold text-slate-400">Diproses</h4>
-                        <p class="text-[11px] text-slate-300 font-normal mt-0.5">Tindakan sedang dilakukan.</p>
-                    </div>
-                </div>
-
-                <!-- Step 4: Selesai (Pending) -->
-                <div class="relative flex items-start gap-4">
-                    <!-- Icon Gray Circle -->
-                    <div class="relative z-10 w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center"></div>
-
-                    <!-- Content -->
-                    <div class="pt-0.5">
-                        <h4 class="text-xs font-semibold text-slate-400">Selesai</h4>
-                        <p class="text-[11px] text-slate-300 font-normal mt-0.5">Pengaduan telah diselesaikan.</p>
-                    </div>
-                </div>
-
+                @endforeach
             </div>
 
         </div>
