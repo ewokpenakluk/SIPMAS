@@ -153,13 +153,14 @@
                                 <span class="bg-emerald-50 text-emerald-600 border border-emerald-100 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full inline-block">
                                     Selesai
                                 </span>
-                            @elseif ($item['status'] === 'diterima')
-                                <span class="bg-amber-50 text-amber-600 border border-amber-100 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full inline-block">
-                                    Diterima
-                                </span>
-                            @else
+                            @elseif ($item['status'] === 'ditolak')
                                 <span class="bg-rose-50 text-rose-600 border border-rose-100 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full inline-block">
                                     Ditolak
+                                </span>
+                            @else
+                                {{-- Status 'menunggu' atau 'diterima' --}}
+                                <span class="bg-amber-50 text-amber-600 border border-amber-100 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full inline-block">
+                                    Diterima
                                 </span>
                             @endif
                         </div>

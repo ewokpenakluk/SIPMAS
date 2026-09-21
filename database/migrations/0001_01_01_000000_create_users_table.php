@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('alamat');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('foto_profil')->nullable();
             $table->enum('peran', ['warga', 'admin', 'superadmin'])->default('warga');
             $table->rememberToken();
             $table->timestamps();

@@ -59,8 +59,16 @@
                 </div>
             @endif
 
-            <form action="{{ route('profil.update') }}" method="POST" class="space-y-6">
+            <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
+
+                <!-- File Input Tersembunyi untuk Foto Profil -->
+                <input type="file" 
+                       id="foto_profil" 
+                       name="foto_profil" 
+                       accept="image/*" 
+                       class="hidden" 
+                       onchange="previewAvatar(this)">
 
                 <!-- GRID 2 KARTU (CARD PROFIL & FORM INFORMASI PRIBADI) -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
@@ -68,15 +76,18 @@
                     <!-- KARTU 1 (KIRI): SUMMARY PROFIL & AVATAR -->
                     <div class="md:col-span-5 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 text-center">
                         <!-- Avatar Circle with Green Edit Pencil Badge -->
-                        <div class="relative w-24 h-24 mx-auto mb-3">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" 
-                                 alt="User Avatar" 
-                                 class="w-24 h-24 rounded-full object-cover border-2 border-slate-100 shadow-sm bg-slate-50">
+                        <div class="relative w-24 h-24 mx-auto mb-3 cursor-pointer group"
+                             onclick="document.getElementById('foto_profil').click()"
+                             title="Klik untuk mengubah foto profil">
+                            <img id="avatar-preview"
+                                 src="{{ $warga['foto_profil'] }}" 
+                                 alt="{{ $warga['nama'] }}" 
+                                 class="w-24 h-24 rounded-full object-cover border-2 border-slate-100 shadow-sm bg-slate-50 group-hover:opacity-90 transition-opacity">
                             <!-- Pencil Edit Badge -->
                             <button type="button" 
                                     title="Ubah Foto Profil" 
                                     class="absolute bottom-0 right-0 w-7 h-7 bg-[#06612B] hover:bg-[#044920] text-white rounded-full flex items-center justify-center text-xs shadow-md border-2 border-white transition-colors">
-                                <i class="fa-solid fa-pen text-[10px]"></i>
+                                <i class="fa-solid fa-camera text-[10px]"></i>
                             </button>
                         </div>
 
@@ -195,4 +206,16 @@
     </div>
 
 </div>
+
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

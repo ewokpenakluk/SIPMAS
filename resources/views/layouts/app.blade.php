@@ -47,9 +47,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F8FAF8;
+        }
+        /* Subtle Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -68,11 +82,7 @@
             @endphp
             <!-- Logo & Brand Name -->
             <a href="{{ $brandLink }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center text-white font-bold shadow-sm shadow-brand-dark/20 group-hover:scale-105 transition-transform duration-200">
-                    <svg class="w-6 h-6 fill-current text-brand-light" viewBox="0 0 24 24">
-                        <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                    </svg>
-                </div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-10 h-10 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform duration-200">
                 <span class="font-bold text-xl tracking-tight text-slate-900 group-hover:text-brand-dark transition-colors">
                     Desa Sagalaherang
                 </span>
@@ -103,9 +113,9 @@
 
             <!-- Right Actions: User Profile Avatar -->
             <div class="flex items-center gap-4">
-                <a href="{{ route('profil') }}" class="flex items-center gap-2 group">
+                <a href="{{ route('profil') }}" class="flex items-center gap-2 group" title="Profil Saya">
                     <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center group-hover:border-brand-dark transition-colors shadow-2xs">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" alt="User Profile" class="w-full h-full object-cover">
+                        <img src="{{ Auth::check() ? Auth::user()->foto_profil_url : 'https://ui-avatars.com/api/?name=User&background=06612B&color=fff' }}" alt="Foto Profil" class="w-full h-full object-cover">
                     </div>
                 </a>
             </div>
@@ -120,18 +130,32 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
-            <div>
-                © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
-            </div>
-            <div class="flex items-center gap-6">
-                <a href="{{ route('kontak') }}" class="hover:text-brand-dark transition-colors">Kontak</a>
-                <a href="{{ route('kebijakan-privasi') }}" class="hover:text-brand-dark transition-colors">Kebijakan Privasi</a>
-                <a href="{{ route('bantuan') }}" class="hover:text-brand-dark transition-colors">Bantuan</a>
-            </div>
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs font-medium text-slate-500">
+            © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
         </div>
     </footer>
 
+    <!-- SUBTLE SCROLL REVEAL SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reveals = document.querySelectorAll('.reveal');
+            if (!reveals.length) return;
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.08,
+                rootMargin: '0px 0px -30px 0px'
+            });
+
+            reveals.forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>

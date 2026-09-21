@@ -19,6 +19,7 @@ class User extends Authenticatable
         'no_hp',
         'alamat',
         'password',
+        'foto_profil',
         'peran',
     ];
 
@@ -26,6 +27,14 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function getFotoProfilUrlAttribute(): string
+    {
+        if ($this->foto_profil && \Storage::disk('public')->exists($this->foto_profil)) {
+            return asset('storage/' . $this->foto_profil);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama) . '&background=06612B&color=fff&size=256';
+    }
 
     protected function casts(): array
     {

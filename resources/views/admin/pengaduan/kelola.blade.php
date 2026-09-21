@@ -62,11 +62,7 @@
             <div>
                 <!-- HEADER BRANDING ADMIN PANEL -->
                 <div class="flex items-center gap-3 pb-6 border-b border-slate-100">
-                    <div class="w-10 h-10 rounded-xl bg-[#06612B] text-[#80EE82] flex items-center justify-center font-bold shadow-md shadow-emerald-900/10">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-10 h-10 object-contain">
                     <div>
                         <h1 class="font-bold text-[#06612B] text-base leading-tight">
                             Admin Panel
@@ -370,15 +366,8 @@
             </div>
 
             <!-- FOOTER -->
-            <footer class="pt-6 border-t border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
-                <div>
-                    © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
-                </div>
-                <div class="flex items-center gap-6">
-                    <a href="{{ route('kontak') }}" class="hover:text-brand-dark transition-colors">Kontak</a>
-                    <a href="{{ route('kebijakan-privasi') }}" class="hover:text-brand-dark transition-colors">Kebijakan Privasi</a>
-                    <a href="{{ route('bantuan') }}" class="hover:text-brand-dark transition-colors">Bantuan</a>
-                </div>
+            <footer class="pt-6 border-t border-slate-200/80 text-center text-xs font-medium text-slate-500">
+                © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
             </footer>
 
         </main>

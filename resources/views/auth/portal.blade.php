@@ -8,10 +8,8 @@
     <!-- HEADER PORTAL -->
     <div class="text-center mb-6 max-w-md mx-auto">
         <!-- Emblem Logo Desa Sagalaherang -->
-        <div class="w-16 h-16 rounded-2xl bg-[#06612B] text-[#80EE82] flex items-center justify-center mx-auto shadow-md shadow-emerald-900/10 mb-3">
-            <svg class="w-9 h-9 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-            </svg>
+        <div class="mb-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-16 h-16 sm:w-20 sm:h-20 mx-auto object-contain drop-shadow-sm">
         </div>
         
         <h1 class="text-2xl sm:text-3xl font-extrabold text-[#06612B] tracking-tight">
@@ -95,6 +93,9 @@
 
                 <form action="{{ route('login') }}" method="POST" class="space-y-4" autocomplete="off">
                     @csrf
+                    <!-- Fake inputs to prevent browser 'Save password?' popup -->
+                    <input type="text" name="fake_user" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
+                    <input type="password" name="fake_pass" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
 
                     <!-- NIK / No HP -->
                     <div>
@@ -134,7 +135,7 @@
                                    id="portal_password" 
                                    name="password" 
                                    required 
-                                   autocomplete="new-password"
+                                   autocomplete="off"
                                    placeholder="Masukkan kata sandi akun Anda" 
                                    class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                             <button type="button" 

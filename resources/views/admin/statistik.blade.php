@@ -62,11 +62,7 @@
             <div>
                 <!-- HEADER BRANDING ADMIN PANEL -->
                 <div class="flex items-center gap-3 pb-6 border-b border-slate-100">
-                    <div class="w-10 h-10 rounded-xl bg-[#06612B] text-[#80EE82] flex items-center justify-center font-bold shadow-md shadow-emerald-900/10">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-10 h-10 object-contain">
                     <div>
                         <h1 class="font-bold text-[#06612B] text-base leading-tight">
                             Admin Panel
@@ -417,37 +413,51 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-xs">
-                            @foreach ($detailData as $item)
+                            @forelse ($detailData as $item)
+                                @php
+                                    $badgeClass = match ($item->status) {
+                                        'diproses' => 'bg-blue-50 text-blue-700 border-blue-200/60',
+                                        'selesai' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
+                                        'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200/60',
+                                        default => 'bg-amber-50 text-amber-700 border-amber-200/60',
+                                    };
+                                @endphp
                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                     <td class="py-3.5 px-4 font-bold text-slate-900 whitespace-nowrap">
-                                        {{ $item['id'] }}
+                                        #{{ $item->nomor_tiket }}
                                     </td>
                                     <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap">
-                                        {{ $item['tanggal'] }}
+                                        {{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}
                                     </td>
                                     <td class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">
-                                        {{ $item['pelapor'] }}
+                                        {{ $item->nama_pelapor }}
                                     </td>
                                     <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap">
-                                        {{ $item['kategori'] }}
+                                        {{ $item->kategori->nama ?? 'Umum' }}
                                     </td>
                                     <td class="py-3.5 px-4 text-slate-600 max-w-xs truncate">
-                                        {{ $item['judul'] }}
+                                        {{ $item->judul }}
                                     </td>
                                     <td class="py-3.5 px-4 whitespace-nowrap">
-                                        <span class="{{ $item['badge_class'] ?? 'bg-emerald-50 text-[#06612B] border-emerald-200/60' }} font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full inline-block border">
-                                            {{ $item['status'] ?? 'SELESAI' }}
+                                        <span class="{{ $badgeClass }} font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full inline-block border">
+                                            {{ strtoupper($item->status) }}
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                        <a href="{{ route('admin.pengaduan.show', ['id' => $item['raw_id']]) }}" 
+                                        <a href="{{ route('admin.pengaduan.show', ['id' => $item->id]) }}" 
                                            class="text-[#06612B] hover:text-[#044920] text-sm p-1.5 transition-colors inline-block" 
                                            title="Lihat Detail">
                                             <i class="fa-regular fa-eye"></i>
                                         </a>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="py-8 px-4 text-center text-slate-400">
+                                        Belum ada data pengaduan.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -455,30 +465,64 @@
                 <!-- PAGINATION FOOTER -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-100">
                     <span class="text-xs text-slate-400 font-medium">
-                        Menampilkan 1-3 dari 142 data
+                        Menampilkan {{ $detailData->firstItem() ?? 0 }}-{{ $detailData->lastItem() ?? 0 }} dari {{ $detailData->total() }} data
                     </span>
 
                     <div class="flex items-center gap-1 text-xs font-semibold">
-                        <button class="w-7 h-7 rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 flex items-center justify-center">&lt;</button>
-                        <button class="w-7 h-7 rounded-lg bg-[#80EE82] text-slate-900 font-bold flex items-center justify-center">1</button>
-                        <button class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">2</button>
-                        <span class="px-1 text-slate-400">...</span>
-                        <button class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">&gt;</button>
+                        {{-- Tombol Previous --}}
+                        @if ($detailData->onFirstPage())
+                            <span class="w-7 h-7 rounded-lg border border-slate-100 text-slate-300 flex items-center justify-center cursor-not-allowed">&lt;</span>
+                        @else
+                            <a href="{{ $detailData->previousPageUrl() }}" class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">&lt;</a>
+                        @endif
+
+                        {{-- Nomor Halaman (Windowing / Smart Pagination) --}}
+                        @php
+                            $currentPage = $detailData->currentPage();
+                            $lastPage = $detailData->lastPage();
+                            $startPage = max(1, $currentPage - 1);
+                            $endPage = min($lastPage, $currentPage + 1);
+                        @endphp
+
+                        {{-- Halaman Pertama --}}
+                        @if ($startPage > 1)
+                            <a href="{{ $detailData->url(1) }}" class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">1</a>
+                            @if ($startPage > 2)
+                                <span class="px-1 text-slate-400">...</span>
+                            @endif
+                        @endif
+
+                        {{-- Halaman Sekitar --}}
+                        @for ($page = $startPage; $page <= $endPage; $page++)
+                            @if ($page == $currentPage)
+                                <span class="w-7 h-7 rounded-lg bg-[#80EE82] text-slate-900 font-bold flex items-center justify-center">{{ $page }}</span>
+                            @else
+                                <a href="{{ $detailData->url($page) }}" class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">{{ $page }}</a>
+                            @endif
+                        @endfor
+
+                        {{-- Halaman Terakhir --}}
+                        @if ($endPage < $lastPage)
+                            @if ($endPage < $lastPage - 1)
+                                <span class="px-1 text-slate-400">...</span>
+                            @endif
+                            <a href="{{ $detailData->url($lastPage) }}" class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">{{ $lastPage }}</a>
+                        @endif
+
+                        {{-- Tombol Next --}}
+                        @if ($detailData->hasMorePages())
+                            <a href="{{ $detailData->nextPageUrl() }}" class="w-7 h-7 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center">&gt;</a>
+                        @else
+                            <span class="w-7 h-7 rounded-lg border border-slate-100 text-slate-300 flex items-center justify-center cursor-not-allowed">&gt;</span>
+                        @endif
                     </div>
                 </div>
 
             </div>
 
             <!-- FOOTER -->
-            <footer class="pt-6 border-t border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
-                <div>
-                    © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
-                </div>
-                <div class="flex items-center gap-6">
-                    <a href="{{ route('kontak') }}" class="hover:text-brand-dark transition-colors">Kontak</a>
-                    <a href="{{ route('kebijakan-privasi') }}" class="hover:text-brand-dark transition-colors">Kebijakan Privasi</a>
-                    <a href="{{ route('bantuan') }}" class="hover:text-brand-dark transition-colors">Bantuan</a>
-                </div>
+            <footer class="pt-6 border-t border-slate-200/80 text-center text-xs font-medium text-slate-500">
+                © 2024 Desa Sagalaherang. Layanan Masyarakat Digital.
             </footer>
 
         </main>

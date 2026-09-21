@@ -16,16 +16,14 @@
             <!-- LOGO & HEADER -->
             <div class="text-center mb-6">
                 <!-- Emblem Logo Desa Sagalaherang -->
-                <div class="w-14 h-14 rounded-2xl bg-[#06612B] text-[#80EE82] flex items-center justify-center mx-auto shadow-md shadow-emerald-900/10 mb-3">
-                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                    </svg>
+                <div class="mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-14 h-14 mx-auto object-contain drop-shadow-sm">
                 </div>
                 
                 <h1 class="text-xl sm:text-2xl font-bold text-[#06612B] tracking-tight">
                     Sistem Administrasi
                 </h1>
-                <p class="text-xs text-slate-500 mt-1 max-w-[280px] mx-auto leading-relaxed font-medium">
+                <p class="text-xs text-slate-500 mt-1 max-w-70 mx-auto leading-relaxed font-medium">
                     Desa Sagalaherang
                 </p>
             </div>
@@ -56,13 +54,16 @@
             @endif
 
             <!-- FORM LOGIN ADMIN -->
-            <form action="{{ route('admin.login') }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.login') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
+                <!-- Fake inputs to prevent browser 'Save password?' popup -->
+                <input type="text" name="fake_user" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
+                <input type="password" name="fake_pass" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
 
                 <!-- Field 1: NIP / Username -->
                 <div>
                     <label for="login_identifier" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                        NIP / Username
+                        Username
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -73,6 +74,7 @@
                                name="login_identifier" 
                                value="{{ old('login_identifier') }}" 
                                required 
+                               autocomplete="off"
                                placeholder="Masukkan NIP atau Username" 
                                class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                     </div>
@@ -91,6 +93,7 @@
                                id="password" 
                                name="password" 
                                required 
+                               autocomplete="off"
                                placeholder="Masukkan Password" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 

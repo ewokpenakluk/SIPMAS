@@ -25,7 +25,28 @@
             </p>
         </div>
 
-        <!-- ALERT ERROR -->
+        <!-- INFORMASI KUOTA PENGADUAN MINGGUAN -->
+        <div class="flex items-center justify-between p-3.5 rounded-xl {{ ($kuotaTersisa ?? 3) > 0 ? 'bg-[#EAFCEB] border border-emerald-200/60 text-[#06612B]' : 'bg-rose-50 border border-rose-200 text-rose-700' }} text-xs">
+            <div class="flex items-center gap-2 font-semibold">
+                <i class="fa-solid fa-ticket text-sm"></i>
+                <span>Kuota Pengaduan Minggu Ini:</span>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg font-extrabold text-xs {{ ($kuotaTersisa ?? 3) > 0 ? 'bg-[#06612B] text-white' : 'bg-rose-600 text-white' }}">
+                {{ $kuotaTersisa ?? 3 }} / 3 Tersisa
+            </span>
+        </div>
+
+        @if (session('error'))
+            <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-sm mt-0.5"></i>
+                <div>
+                    <span class="font-bold block">Batas Kuota Pengaduan</span>
+                    <span class="text-[11px] leading-relaxed">{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+
+        <!-- ALERT ERROR VALIDASI -->
         @if ($errors->any())
             <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-100 text-rose-700 text-xs">
                 <div class="font-semibold mb-1 flex items-center gap-1.5">
@@ -182,11 +203,20 @@
                 </a>
 
                 <!-- Tombol Kirim Pengaduan (Hijau Utama) -->
-                <button type="submit" 
-                        class="bg-[#06612B] hover:bg-[#044920] text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-sm transition-all hover:shadow-md active:scale-[0.99] flex items-center gap-2">
-                    <span>Kirim Pengaduan</span>
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                </button>
+                @if (($kuotaTersisa ?? 3) > 0)
+                    <button type="submit" 
+                            class="bg-[#06612B] hover:bg-[#044920] text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-sm transition-all hover:shadow-md active:scale-[0.99] flex items-center gap-2">
+                        <span>Kirim Pengaduan</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                @else
+                    <button type="button" disabled
+                            class="bg-slate-200 text-slate-400 font-semibold text-xs px-6 py-2.5 rounded-xl cursor-not-allowed flex items-center gap-2"
+                            title="Batas kuota 3 pengaduan per minggu telah tercapai">
+                        <span>Kuota Penuh (3/3)</span>
+                        <i class="fa-solid fa-lock text-xs"></i>
+                    </button>
+                @endif
             </div>
 
         </form>

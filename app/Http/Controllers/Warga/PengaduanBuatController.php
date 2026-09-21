@@ -37,7 +37,14 @@ class PengaduanBuatController extends Controller
             ]);
         }
 
-        return view('pengaduan.buat', compact('kategoriList'));
+        // Hitung pengaduan user dalam 7 hari terakhir (1 minggu)
+        $user = Auth::user();
+        $pengaduanMingguIni = Pengaduan::where('pengguna_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+        $kuotaTersisa = max(0, 3 - $pengaduanMingguIni);
+
+        return view('pengaduan.buat', compact('kategoriList', 'pengaduanMingguIni', 'kuotaTersisa'));
     }
 
     /**
@@ -52,6 +59,19 @@ class PengaduanBuatController extends Controller
 
         if (!Auth::check()) {
             return redirect()->route('portal', ['tab' => 'masuk']);
+        }
+
+        $user = Auth::user();
+
+        // Validasi kuota maksimal 3 pengaduan per 1 minggu (7 hari)
+        $pengaduanMingguIni = Pengaduan::where('pengguna_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+
+        if ($pengaduanMingguIni >= 3) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Batas kuota pengaduan tercapai! Setiap akun warga hanya dapat mengirim maksimal 3 pengaduan dalam 1 minggu. Kuota Anda akan ter-reset otomatis 7 hari setelah pengaduan sebelumnya.');
         }
 
         $request->validate([
@@ -73,8 +93,6 @@ class PengaduanBuatController extends Controller
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('pengaduan_foto', 'public');
         }
-
-        $user = Auth::user();
 
         $pengaduan = Pengaduan::create([
             'kategori_id' => $request->kategori_id,

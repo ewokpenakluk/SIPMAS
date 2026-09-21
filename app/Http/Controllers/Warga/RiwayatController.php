@@ -52,10 +52,16 @@ class RiwayatController extends Controller
         $sampleRiwayat = $pengaduanList->map(function ($item) {
             $badgeClass = match ($item->status) {
                 'diproses' => 'bg-blue-50 text-blue-700 border-blue-200/60',
-                'diterima' => 'bg-blue-50 text-blue-700 border-blue-200/60',
                 'selesai' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
                 'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200/60',
                 default => 'bg-amber-50 text-amber-700 border-amber-200/60',
+            };
+
+            $statusText = match ($item->status) {
+                'diproses' => 'DIPROSES',
+                'selesai' => 'SELESAI',
+                'ditolak' => 'DITOLAK',
+                default => 'DITERIMA',
             };
 
             return [
@@ -65,8 +71,8 @@ class RiwayatController extends Controller
                 'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
                 'judul' => $item->judul,
                 'kategori' => $item->kategori->nama ?? 'Umum',
-                'status' => $item->status,
-                'status_label' => ucfirst($item->status),
+                'status' => $statusText,
+                'status_label' => $statusText,
                 'badge_class' => $badgeClass,
                 'catatan_admin' => $item->catatan_admin,
             ];

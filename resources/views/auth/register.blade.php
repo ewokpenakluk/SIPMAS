@@ -16,10 +16,8 @@
             <!-- LOGO & HEADER -->
             <div class="text-center mb-6">
                 <!-- Emblem Logo Desa Sagalaherang -->
-                <div class="w-14 h-14 rounded-2xl bg-[#06612B] text-[#80EE82] flex items-center justify-center mx-auto shadow-md shadow-emerald-900/10 mb-3">
-                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 2L3 9v11a1 1 0 001 1h16a1 1 0 001-1V9l-9-7zm0 2.84L18.5 10H5.5L12 4.84zM5 12h14v7H5v-7z"/>
-                    </svg>
+                <div class="mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo Subang" class="w-14 h-14 mx-auto object-contain drop-shadow-sm">
                 </div>
                 
                 <h1 class="text-xl font-bold text-slate-900 tracking-tight">
@@ -86,6 +84,9 @@
             <!-- FORM REGISTRASI -->
             <form action="{{ route('register') }}" method="POST" class="space-y-4" autocomplete="off">
                 @csrf
+                <!-- Fake inputs to prevent browser 'Save password?' popup -->
+                <input type="text" name="fake_user" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
+                <input type="password" name="fake_pass" style="display:none" tabindex="-1" aria-hidden="true" autocomplete="off">
 
                 <!-- Field 1: Nama Lengkap -->
                 <div>
@@ -184,7 +185,7 @@
                                id="password" 
                                name="password" 
                                required 
-                               autocomplete="new-password"
+                               autocomplete="off"
                                placeholder="Buat kata sandi baru (minimal 8 karakter)" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 
@@ -208,7 +209,7 @@
                                id="password_confirmation" 
                                name="password_confirmation" 
                                required 
-                               autocomplete="new-password"
+                               autocomplete="off"
                                placeholder="Ulangi kata sandi yang telah dibuat" 
                                class="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#06612B] focus:ring-1 focus:ring-[#06612B] transition-all">
                         <button type="button" 

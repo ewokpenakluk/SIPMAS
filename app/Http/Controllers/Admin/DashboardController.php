@@ -34,16 +34,19 @@ class DashboardController extends Controller
             'selesai' => $selesai,
         ];
 
-        // Tren mingguan
-        $trenMingguan = [
-            ['hari' => 'Sen', 'nilai' => 35],
-            ['hari' => 'Sel', 'nilai' => 60],
-            ['hari' => 'Rab', 'nilai' => 25],
-            ['hari' => 'Kam', 'nilai' => 95],
-            ['hari' => 'Jum', 'nilai' => 70],
-            ['hari' => 'Sab', 'nilai' => 45],
-            ['hari' => 'Min', 'nilai' => 15],
-        ];
+        // Tren mingguan dinamis dari database (Senin-Minggu)
+        $startOfWeek = now()->startOfWeek();
+        $days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+        $trenMingguan = [];
+
+        foreach ($days as $index => $hariLabel) {
+            $date = (clone $startOfWeek)->addDays($index);
+            $count = Pengaduan::whereDate('created_at', $date->toDateString())->count();
+            $trenMingguan[] = [
+                'hari' => $hariLabel,
+                'nilai' => $count,
+            ];
+        }
 
         // Ambil pengaduan terbaru dari database dengan pagination (5 item per halaman)
         $perluVerifikasi = Pengaduan::with('kategori')

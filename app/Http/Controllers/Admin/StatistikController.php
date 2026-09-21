@@ -27,17 +27,18 @@ class StatistikController extends Controller
         $menungguProses = Pengaduan::where('status', 'menunggu')->count();
         $sedangDiproses = Pengaduan::whereIn('status', ['diproses', 'diterima'])->count();
         $selesaiDitangani = Pengaduan::where('status', 'selesai')->count();
+        $resolusiRate = $totalPengaduan > 0 ? round(($selesaiDitangani / $totalPengaduan) * 100) : 0;
 
         $metrics = [
             'total_pengaduan' => $totalPengaduan,
-            'total_growth' => '+12% dari bulan lalu',
+            'total_growth' => 'Data Real-time',
             'menunggu_proses' => $menungguProses,
             'menunggu_note' => 'Butuh perhatian',
             'sedang_diproses' => $sedangDiproses,
             'diproses_note' => 'Dalam pengerjaan tim',
             'selesai_ditangani' => $selesaiDitangani,
-            'selesai_note' => 'Tingkat resolusi 85%',
-            'resolusi_rate' => 'Tingkat resolusi 85%',
+            'selesai_note' => 'Tingkat resolusi ' . $resolusiRate . '%',
+            'resolusi_rate' => 'Tingkat resolusi ' . $resolusiRate . '%',
         ];
 
         // Query pengaduan list untuk tabel rekapitulasi
@@ -47,51 +48,46 @@ class StatistikController extends Controller
             $query->where('status', strtolower($status));
         }
 
-        $pengaduanList = $query->get();
+        // Pagination: 5 data per halaman
+        $pengaduanPaginated = $query->paginate(5)->withQueryString();
 
-        $rekapTable = $pengaduanList->map(function ($item) {
-            $badgeClass = match ($item->status) {
-                'diproses' => 'bg-blue-50 text-blue-700 border-blue-200/60',
-                'selesai' => 'bg-emerald-50 text-[#06612B] border-emerald-200/60',
-                'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200/60',
-                default => 'bg-amber-50 text-amber-700 border-amber-200/60',
-            };
+        $detailData = $pengaduanPaginated;
 
+        // Hitung Kategori Chart secara dinamis dari database
+        $colors = ['#06612B', '#80EE82', '#3B82F6', '#F59E0B', '#94A3B8', '#EC4899'];
+        $kategoriList = \App\Models\Kategori::withCount('pengaduan')->get();
+        $kategoriChart = $kategoriList->map(function ($kat, $index) use ($totalPengaduan, $colors) {
+            $persen = $totalPengaduan > 0 ? round(($kat->pengaduan_count / $totalPengaduan) * 100) : 0;
             return [
-                'id' => '#' . $item->nomor_tiket,
-                'raw_id' => $item->id,
-                'tanggal' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
-                'pelapor' => $item->nama_pelapor,
-                'kategori' => $item->kategori->nama ?? 'Umum',
-                'judul' => $item->judul,
-                'status' => strtoupper($item->status),
-                'badge_class' => $badgeClass,
+                'nama' => $kat->nama,
+                'persen' => $persen,
+                'warna' => $colors[$index % count($colors)],
             ];
         })->toArray();
 
-        $detailData = $rekapTable;
+        // Hitung Resolution Chart secara dinamis (4 bulan terakhir)
+        $resolutionChart = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $bulanName = $date->format('M');
+            $masuk = Pengaduan::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+            $selesai = Pengaduan::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->where('status', 'selesai')
+                ->count();
 
-        // Sample Kategori Donut Chart
-        $kategoriChart = [
-            ['nama' => 'Infrastruktur & Jalan', 'persen' => 45, 'warna' => '#06612B'],
-            ['nama' => 'Layanan Publik', 'persen' => 25, 'warna' => '#80EE82'],
-            ['nama' => 'Keamanan & Ketertiban', 'persen' => 15, 'warna' => '#3B82F6'],
-            ['nama' => 'Kebersihan & Lingkungan', 'persen' => 10, 'warna' => '#F59E0B'],
-            ['nama' => 'Lainnya', 'persen' => 5, 'warna' => '#94A3B8'],
-        ];
-
-        // Sample Resolution Chart
-        $resolutionChart = [
-            ['bulan' => 'Jul', 'masuk' => 30, 'selesai' => 25],
-            ['bulan' => 'Agu', 'masuk' => 40, 'selesai' => 38],
-            ['bulan' => 'Sep', 'masuk' => 35, 'selesai' => 32],
-            ['bulan' => 'Okt', 'masuk' => 45, 'selesai' => 41],
-        ];
+            $resolutionChart[] = [
+                'bulan' => $bulanName,
+                'masuk' => $masuk,
+                'selesai' => $selesai,
+            ];
+        }
 
         return view('admin.statistik', compact(
             'metrics',
             'detailData',
-            'rekapTable',
             'kategoriChart',
             'resolutionChart',
             'rentangWaktu',
