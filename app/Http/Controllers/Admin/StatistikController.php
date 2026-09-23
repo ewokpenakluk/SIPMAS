@@ -20,18 +20,48 @@ class StatistikController extends Controller
         }
 
         $rentangWaktu = $request->query('rentang', 'bulan_ini');
-        $kategori = $request->query('kategori');
+        $kategoriId = $request->query('kategori');
         $status = $request->query('status');
 
-        $totalPengaduan = Pengaduan::count();
-        $menungguProses = Pengaduan::where('status', 'menunggu')->count();
-        $sedangDiproses = Pengaduan::whereIn('status', ['diproses', 'diterima'])->count();
-        $selesaiDitangani = Pengaduan::where('status', 'selesai')->count();
+        // Base Query untuk filter dinamis
+        $baseQuery = Pengaduan::query();
+
+        // 1. Filter Rentang Waktu
+        if ($rentangWaktu === 'bulan_ini') {
+            $baseQuery->whereYear('created_at', now()->year)
+                      ->whereMonth('created_at', now()->month);
+        } elseif ($rentangWaktu === 'bulan_lalu') {
+            $prevMonth = now()->subMonth();
+            $baseQuery->whereYear('created_at', $prevMonth->year)
+                      ->whereMonth('created_at', $prevMonth->month);
+        } elseif ($rentangWaktu === 'tahun_ini') {
+            $baseQuery->whereYear('created_at', now()->year);
+        }
+
+        // 2. Filter Kategori
+        if (!empty($kategoriId)) {
+            $baseQuery->where('kategori_id', $kategoriId);
+        }
+
+        // 3. Filter Status
+        if (!empty($status)) {
+            if ($status === 'diproses') {
+                $baseQuery->whereIn('status', ['diproses', 'diterima']);
+            } else {
+                $baseQuery->where('status', strtolower($status));
+            }
+        }
+
+        // Hitung Metrik Berdasarkan Filter
+        $totalPengaduan = (clone $baseQuery)->count();
+        $menungguProses = (clone $baseQuery)->where('status', 'menunggu')->count();
+        $sedangDiproses = (clone $baseQuery)->whereIn('status', ['diproses', 'diterima'])->count();
+        $selesaiDitangani = (clone $baseQuery)->where('status', 'selesai')->count();
         $resolusiRate = $totalPengaduan > 0 ? round(($selesaiDitangani / $totalPengaduan) * 100) : 0;
 
         $metrics = [
             'total_pengaduan' => $totalPengaduan,
-            'total_growth' => 'Data Real-time',
+            'total_growth' => 'Data Terfilter',
             'menunggu_proses' => $menungguProses,
             'menunggu_note' => 'Butuh perhatian',
             'sedang_diproses' => $sedangDiproses,
@@ -41,23 +71,41 @@ class StatistikController extends Controller
             'resolusi_rate' => 'Tingkat resolusi ' . $resolusiRate . '%',
         ];
 
-        // Query pengaduan list untuk tabel rekapitulasi
-        $query = Pengaduan::with('kategori')->orderBy('created_at', 'desc');
+        // Query pengaduan list untuk tabel rekapitulasi (Paginate 5 per halaman)
+        $detailData = (clone $baseQuery)->with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5)
+            ->withQueryString();
 
-        if (!empty($status)) {
-            $query->where('status', strtolower($status));
+        // Data Kategori dari Database untuk dropdown filter & chart
+        $allKategori = \App\Models\Kategori::all();
+        $colors = ['#06612B', '#80EE82', '#3B82F6', '#F59E0B', '#94A3B8', '#EC4899'];
+        
+        // Base Query tanpa filter kategori untuk statistik per kategori
+        $kategoriQuery = (clone $baseQuery);
+        if (!empty($kategoriId)) {
+            $kategoriQuery = Pengaduan::query();
+            if ($rentangWaktu === 'bulan_ini') {
+                $kategoriQuery->whereYear('created_at', now()->year)->whereMonth('created_at', now()->month);
+            } elseif ($rentangWaktu === 'bulan_lalu') {
+                $prevMonth = now()->subMonth();
+                $kategoriQuery->whereYear('created_at', $prevMonth->year)->whereMonth('created_at', $prevMonth->month);
+            } elseif ($rentangWaktu === 'tahun_ini') {
+                $kategoriQuery->whereYear('created_at', now()->year);
+            }
+            if (!empty($status)) {
+                if ($status === 'diproses') {
+                    $kategoriQuery->whereIn('status', ['diproses', 'diterima']);
+                } else {
+                    $kategoriQuery->where('status', strtolower($status));
+                }
+            }
         }
 
-        // Pagination: 5 data per halaman
-        $pengaduanPaginated = $query->paginate(5)->withQueryString();
-
-        $detailData = $pengaduanPaginated;
-
-        // Hitung Kategori Chart secara dinamis dari database
-        $colors = ['#06612B', '#80EE82', '#3B82F6', '#F59E0B', '#94A3B8', '#EC4899'];
-        $kategoriList = \App\Models\Kategori::withCount('pengaduan')->get();
-        $kategoriChart = $kategoriList->map(function ($kat, $index) use ($totalPengaduan, $colors) {
-            $persen = $totalPengaduan > 0 ? round(($kat->pengaduan_count / $totalPengaduan) * 100) : 0;
+        $totalKategoriCount = (clone $kategoriQuery)->count();
+        $kategoriChart = $allKategori->map(function ($kat, $index) use ($kategoriQuery, $totalKategoriCount, $colors) {
+            $count = (clone $kategoriQuery)->where('kategori_id', $kat->id)->count();
+            $persen = $totalKategoriCount > 0 ? round(($count / $totalKategoriCount) * 100) : 0;
             return [
                 'nama' => $kat->nama,
                 'persen' => $persen,
@@ -70,13 +118,16 @@ class StatistikController extends Controller
         for ($i = 3; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $bulanName = $date->format('M');
-            $masuk = Pengaduan::whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->count();
-            $selesai = Pengaduan::whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->where('status', 'selesai')
-                ->count();
+            
+            $monthQuery = Pengaduan::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month);
+            
+            if (!empty($kategoriId)) {
+                $monthQuery->where('kategori_id', $kategoriId);
+            }
+
+            $masuk = (clone $monthQuery)->count();
+            $selesai = (clone $monthQuery)->where('status', 'selesai')->count();
 
             $resolutionChart[] = [
                 'bulan' => $bulanName,
@@ -91,8 +142,9 @@ class StatistikController extends Controller
             'kategoriChart',
             'resolutionChart',
             'rentangWaktu',
-            'kategori',
-            'status'
+            'kategoriId',
+            'status',
+            'allKategori'
         ));
     }
 }

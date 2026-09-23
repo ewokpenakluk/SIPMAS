@@ -140,9 +140,10 @@
                     <select id="rentang" 
                             name="rentang" 
                             class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#06612B] cursor-pointer">
-                        <option value="bulan_ini">Bulan Ini (Okt 2024)</option>
-                        <option value="bulan_lalu">Bulan Lalu</option>
-                        <option value="tahun_ini">Tahun Ini (2024)</option>
+                        <option value="bulan_ini" {{ $rentangWaktu === 'bulan_ini' ? 'selected' : '' }}>Bulan Ini ({{ now()->translatedFormat('M Y') }})</option>
+                        <option value="bulan_lalu" {{ $rentangWaktu === 'bulan_lalu' ? 'selected' : '' }}>Bulan Lalu ({{ now()->subMonth()->translatedFormat('M Y') }})</option>
+                        <option value="tahun_ini" {{ $rentangWaktu === 'tahun_ini' ? 'selected' : '' }}>Tahun Ini ({{ now()->year }})</option>
+                        <option value="semua" {{ $rentangWaktu === 'semua' ? 'selected' : '' }}>Semua Waktu</option>
                     </select>
                 </div>
 
@@ -155,10 +156,9 @@
                             name="kategori" 
                             class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#06612B] cursor-pointer">
                         <option value="">Semua Kategori</option>
-                        <option value="infrastruktur">Infrastruktur</option>
-                        <option value="layanan_publik">Layanan Publik</option>
-                        <option value="keamanan">Keamanan</option>
-                        <option value="lingkungan">Lingkungan</option>
+                        @foreach($allKategori as $kat)
+                            <option value="{{ $kat->id }}" {{ (string)$kategoriId === (string)$kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -171,9 +171,10 @@
                             name="status" 
                             class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#06612B] cursor-pointer">
                         <option value="">Semua Status</option>
-                        <option value="menunggu">Menunggu Proses</option>
-                        <option value="diproses">Sedang Diproses</option>
-                        <option value="selesai">Selesai</option>
+                        <option value="menunggu" {{ $status === 'menunggu' ? 'selected' : '' }}>Menunggu Proses</option>
+                        <option value="diproses" {{ $status === 'diproses' ? 'selected' : '' }}>Sedang Diproses</option>
+                        <option value="selesai" {{ $status === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        <option value="ditolak" {{ $status === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                     </select>
                 </div>
 
@@ -281,42 +282,28 @@
                                 <!-- Background Circle -->
                                 <path class="text-slate-100 stroke-current" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                 
-                                <!-- Slice 1: Infrastruktur (#06612B - 45%) -->
-                                <path class="text-[#06612B] stroke-current" stroke-dasharray="45, 100" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                
-                                <!-- Slice 2: Layanan Publik (#80EE82 - 25%) -->
-                                <path class="text-[#80EE82] stroke-current" stroke-dasharray="25, 100" stroke-dashoffset="-45" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                
-                                <!-- Slice 3: Keamanan (#1B4D2E - 15%) -->
-                                <path class="text-[#1B4D2E] stroke-current" stroke-dasharray="15, 100" stroke-dashoffset="-70" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                
-                                <!-- Slice 4: Lingkungan (#98F59A - 10%) -->
-                                <path class="text-[#98F59A] stroke-current" stroke-dasharray="10, 100" stroke-dashoffset="-85" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                @php
+                                    $currentOffset = 0;
+                                @endphp
+                                @foreach($kategoriChart as $katChart)
+                                    @if($katChart['persen'] > 0)
+                                        <path stroke="{{ $katChart['warna'] }}" stroke-dasharray="{{ $katChart['persen'] }}, 100" stroke-dashoffset="-{{ $currentOffset }}" stroke-width="6" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        @php
+                                            $currentOffset += $katChart['persen'];
+                                        @endphp
+                                    @endif
+                                @endforeach
                             </svg>
                         </div>
 
                         <!-- Donut Legend -->
                         <div class="space-y-2 text-xs w-full sm:w-auto">
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3 h-3 rounded-xs bg-[#06612B] inline-block"></span>
-                                <span class="text-slate-600 font-medium">Infrastruktur</span>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3 h-3 rounded-xs bg-[#80EE82] inline-block"></span>
-                                <span class="text-slate-600 font-medium">Layanan Publik</span>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3 h-3 rounded-xs bg-[#1B4D2E] inline-block"></span>
-                                <span class="text-slate-600 font-medium">Keamanan</span>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3 h-3 rounded-xs bg-[#98F59A] inline-block"></span>
-                                <span class="text-slate-600 font-medium">Lingkungan</span>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3 h-3 rounded-xs bg-slate-200 inline-block"></span>
-                                <span class="text-slate-600 font-medium">Lainnya</span>
-                            </div>
+                            @foreach($kategoriChart as $katChart)
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-3 h-3 rounded-xs inline-block" style="background-color: {{ $katChart['warna'] }}"></span>
+                                    <span class="text-slate-600 font-medium">{{ $katChart['nama'] }} ({{ $katChart['persen'] }}%)</span>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -341,36 +328,33 @@
                         </div>
                     </div>
 
+                    @php
+                        $maxVal = 1;
+                        foreach ($resolutionChart as $res) {
+                            if ($res['masuk'] > $maxVal) $maxVal = $res['masuk'];
+                            if ($res['selesai'] > $maxVal) $maxVal = $res['selesai'];
+                        }
+                    @endphp
+
                     <!-- Grouped Bar Chart Visual -->
                     <div>
                         <div class="flex items-end justify-between gap-4 h-48 pt-4 border-b border-slate-100 pb-2">
-                            <!-- Jul -->
-                            <div class="w-full flex items-end justify-center gap-1.5 h-full">
-                                <div class="w-4 bg-slate-200 rounded-t-xs h-[70%]" title="Masuk: 35"></div>
-                                <div class="w-4 bg-[#06612B] rounded-t-xs h-[60%]" title="Selesai: 30"></div>
-                            </div>
-                            <!-- Agu -->
-                            <div class="w-full flex items-end justify-center gap-1.5 h-full">
-                                <div class="w-4 bg-slate-200 rounded-t-xs h-[85%]" title="Masuk: 42"></div>
-                                <div class="w-4 bg-[#06612B] rounded-t-xs h-[70%]" title="Selesai: 35"></div>
-                            </div>
-                            <!-- Sep -->
-                            <div class="w-full flex items-end justify-center gap-1.5 h-full">
-                                <div class="w-4 bg-slate-200 rounded-t-xs h-[76%]" title="Masuk: 38"></div>
-                                <div class="w-4 bg-[#06612B] rounded-t-xs h-[60%]" title="Selesai: 30"></div>
-                            </div>
-                            <!-- Okt -->
-                            <div class="w-full flex items-end justify-center gap-1.5 h-full">
-                                <div class="w-4 bg-slate-200 rounded-t-xs h-[90%]" title="Masuk: 45"></div>
-                                <div class="w-4 bg-[#06612B] rounded-t-xs h-[40%]" title="Selesai: 20"></div>
-                            </div>
+                            @foreach($resolutionChart as $res)
+                                @php
+                                    $heightMasuk = $maxVal > 0 ? max(10, round(($res['masuk'] / $maxVal) * 100)) : 10;
+                                    $heightSelesai = $maxVal > 0 ? max(10, round(($res['selesai'] / $maxVal) * 100)) : 10;
+                                @endphp
+                                <div class="w-full flex items-end justify-center gap-1.5 h-full">
+                                    <div class="w-4 bg-slate-200 rounded-t-xs" style="height: {{ $res['masuk'] > 0 ? $heightMasuk.'%' : '4px' }}" title="Masuk: {{ $res['masuk'] }}"></div>
+                                    <div class="w-4 bg-[#06612B] rounded-t-xs" style="height: {{ $res['selesai'] > 0 ? $heightSelesai.'%' : '4px' }}" title="Selesai: {{ $res['selesai'] }}"></div>
+                                </div>
+                            @endforeach
                         </div>
 
                         <div class="flex items-center justify-between gap-4 pt-2">
-                            <span class="w-full text-center text-[11px] font-semibold text-slate-500">Jul</span>
-                            <span class="w-full text-center text-[11px] font-semibold text-slate-500">Agu</span>
-                            <span class="w-full text-center text-[11px] font-semibold text-slate-500">Sep</span>
-                            <span class="w-full text-center text-[11px] font-semibold text-slate-500">Okt</span>
+                            @foreach($resolutionChart as $res)
+                                <span class="w-full text-center text-[11px] font-semibold text-slate-500">{{ $res['bulan'] }}</span>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -384,18 +368,6 @@
                     <h3 class="text-base font-bold text-slate-900">
                         Detail Data Pengaduan
                     </h3>
-
-                    <!-- Export Buttons (PDF & Excel) -->
-                    <div class="flex items-center gap-2.5">
-                        <button type="button" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
-                            <i class="fa-regular fa-file-pdf text-rose-500"></i>
-                            <span>Export PDF</span>
-                        </button>
-                        <button type="button" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
-                            <i class="fa-regular fa-file-excel text-emerald-600"></i>
-                            <span>Export Excel</span>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- TABLE CONTENT -->

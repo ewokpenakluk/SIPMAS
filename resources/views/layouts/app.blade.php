@@ -46,6 +46,9 @@
     <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>
         html {
             scroll-behavior: smooth;
@@ -67,12 +70,12 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800 antialiased selection:bg-brand-medium selection:text-white">
+<body class="min-h-screen flex flex-col text-slate-800 antialiased selection:bg-brand-medium selection:text-white" x-data="{ mobileMenuOpen: false, userDropdownOpen: false }">
 
     <!-- NAVBAR HEADER (Tidak ditampilkan pada halaman Login & Auth) -->
     @unless(request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('portal') || request()->routeIs('admin.login'))
     <header class="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
             
             @php
                 $brandLink = route('beranda');
@@ -111,13 +114,79 @@
                 </a>
             </nav>
 
-            <!-- Right Actions: User Profile Avatar -->
-            <div class="flex items-center gap-4">
-                <a href="{{ route('profil') }}" class="flex items-center gap-2 group" title="Profil Saya">
-                    <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center group-hover:border-brand-dark transition-colors shadow-2xs">
-                        <img src="{{ Auth::check() ? Auth::user()->foto_profil_url : 'https://ui-avatars.com/api/?name=User&background=06612B&color=fff' }}" alt="Foto Profil" class="w-full h-full object-cover">
+            <!-- Right Actions: User Profile Avatar Dropdown & Mobile Toggle -->
+            <div class="flex items-center gap-3">
+                @if(Auth::check())
+                <!-- Avatar Dropdown Container -->
+                <div class="relative">
+                    <button @click="userDropdownOpen = !userDropdownOpen" @click.outside="userDropdownOpen = false" type="button" class="flex items-center gap-2 group focus:outline-none" title="Menu Pengguna">
+                        <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center group-hover:border-brand-dark transition-colors shadow-2xs">
+                            <img src="{{ Auth::user()->foto_profil_url }}" alt="Foto Profil" class="w-full h-full object-cover">
+                        </div>
+                    </button>
+
+                    <!-- Dropdown Menu Box -->
+                    <div x-show="userDropdownOpen" 
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-100 shadow-xl py-2 z-50 text-xs"
+                         style="display: none;">
+                        
+                        <div class="px-4 py-2.5 border-b border-slate-100">
+                            <p class="font-bold text-slate-900 truncate">{{ Auth::user()->nama }}</p>
+                            <p class="text-[11px] text-slate-400 capitalize">{{ Auth::user()->peran === 'admin' ? 'Administrator' : 'Warga Desa' }}</p>
+                        </div>
+
+                        <a href="{{ route('profil') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 font-medium transition-colors">
+                            <i class="fa-regular fa-user text-slate-400 text-sm"></i>
+                            <span>Profil Saya</span>
+                        </a>
+
+                        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 font-medium transition-colors">
+                            <i class="fa-solid fa-table-cells-large text-slate-400 text-sm"></i>
+                            <span>Dashboard Warga</span>
+                        </a>
+
+                        <a href="{{ route('pengaduan.buat') }}" class="flex items-center gap-2.5 px-4 py-2 text-[#06612B] hover:bg-emerald-50 font-semibold transition-colors">
+                            <i class="fa-solid fa-plus text-[#06612B] text-sm"></i>
+                            <span>Buat Laporan Baru</span>
+                        </a>
+
+                        <div class="border-t border-slate-100 my-1"></div>
+
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 font-semibold transition-colors text-left">
+                                <i class="fa-solid fa-right-from-bracket text-rose-500 text-sm"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
                     </div>
-                </a>
+                </div>
+                @endif
+
+                <!-- Mobile Navigation Toggle Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="md:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid" :class="mobileMenuOpen ? 'fa-xmark text-xl' : 'fa-bars text-xl'"></i>
+                </button>
+            </div>
+            @endunless
+
+            <!-- Mobile Navigation Drawer -->
+            @unless(request()->routeIs('beranda'))
+            <div x-show="mobileMenuOpen" 
+                 @click.outside="mobileMenuOpen = false"
+                 x-transition
+                 class="md:hidden absolute left-0 right-0 top-20 bg-white border-b border-slate-100 shadow-lg p-4 space-y-2 z-40"
+                 style="display: none;">
+                <a href="{{ route('dashboard') }}" class="block px-4 py-2.5 rounded-xl font-medium text-xs {{ request()->routeIs('dashboard') ? 'bg-emerald-50 text-brand-dark font-bold' : 'text-slate-700 hover:bg-slate-50' }}">Dashboard Warga</a>
+                <a href="{{ route('pengaduan.lacak') }}" class="block px-4 py-2.5 rounded-xl font-medium text-xs {{ request()->routeIs('pengaduan.lacak') ? 'bg-emerald-50 text-brand-dark font-bold' : 'text-slate-700 hover:bg-slate-50' }}">Lacak Laporan</a>
+                <a href="{{ route('riwayat') }}" class="block px-4 py-2.5 rounded-xl font-medium text-xs {{ request()->routeIs('riwayat') ? 'bg-emerald-50 text-brand-dark font-bold' : 'text-slate-700 hover:bg-slate-50' }}">Riwayat Laporan</a>
+                <a href="{{ route('profil') }}" class="block px-4 py-2.5 rounded-xl font-medium text-xs {{ request()->routeIs('profil') ? 'bg-emerald-50 text-brand-dark font-bold' : 'text-slate-700 hover:bg-slate-50' }}">Profil Saya</a>
             </div>
             @endunless
         </div>
